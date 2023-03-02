@@ -1,0 +1,202 @@
+/*****************************************************************//**
+ * \file   Material.cpp
+ * \brief  マテリアルクラス
+ * 
+ * \author Hiroto Kuge
+ * \date   October 2022
+ *********************************************************************/
+
+//-----------------------------------------------------------------------------
+// Includes.
+//-----------------------------------------------------------------------------
+#include "Material.h"
+#include <DirectXMath.h>
+#include "GraphicsEngine.h"
+#include "../Util/Logger.h"
+#include "../Util/FileUtil.h"
+
+
+
+
+//-----------------------------------------------------------------------------
+// static member.
+//-----------------------------------------------------------------------------
+const wchar_t* Material::DummyTag = L""; // ダミーテクスチャ用
+
+
+//-----------------------------------------------------------------------------
+// デストラクタ
+//-----------------------------------------------------------------------------
+Material::~Material()
+{}
+
+
+//=============================================================================
+// マテリアルの初期化
+//=============================================================================
+bool Material::Init(
+	const ResMaterialPBR& resMaterial, 
+	const wchar_t* p_vsFilePath, 
+	const wchar_t* p_psFilePath, 
+	const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormat, 
+	uint32_t numSrv, 
+	uint32_t numCbv, 
+	uint32_t offsetInDescriptorsFromTableStartCB, 
+	uint32_t offsetInDescriptorsFromTableStartSRV, 
+	D3D12_FILTER samplerFilter
+){
+
+	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	auto pCommandQueue = GraphicsEngine::GetInstance()->GetCommandQueue();
+
+
+	// テクスチャを初期化
+	InitTexture(pDevice,pCommandQueue,resMaterial);
+
+	// 定数バッファを作成
+	PBR_Param param;
+	param.Metallic = resMaterial.Matallic;
+	param.Roughness = resMaterial.Roughness;
+	m_materialCB.Init(sizeof(PBR_Param),&param);
+
+	//ルートシグネチャを初期化
+	D3D12_STATIC_SAMPLER_DESC samplerDescArray[2];
+	
+	//デフォルトのサンプラ-
+	samplerDescArray[0].Filter = samplerFilter;
+	samplerDescArray[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDescArray[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDescArray[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDescArray[0].MipLODBias = 0;
+	samplerDescArray[0].MaxAnisotropy = 0;
+	samplerDescArray[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+	samplerDescArray[0].BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
+	samplerDescArray[0].MinLOD = 0.0f;
+	samplerDescArray[0].MaxLOD = D3D12_FLOAT32_MAX;
+	samplerDescArray[0].ShaderRegister = 0;
+	samplerDescArray[0].RegisterSpace = 0;
+	samplerDescArray[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	
+	//シャドウマップ用のサンプラ-
+	samplerDescArray[1] = samplerDescArray[0];
+	
+	//比較対象の値が小さければ０、大きければ１を返す比較関数を設定する
+	samplerDescArray[1].Filter = D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+	samplerDescArray[1].ComparisonFunc = D3D12_COMPARISON_FUNC_GREATER;
+	samplerDescArray[1].MaxAnisotropy = 1;
+	samplerDescArray[1].ShaderRegister = 1;
+
+	m_rootSignature.Init(
+		samplerDescArray,
+		2,
+		numCbv,
+		numSrv,
+		8,
+		offsetInDescriptorsFromTableStartCB,
+		offsetInDescriptorsFromTableStartSRV
+	);
+
+
+	// グラフィックスパイプラインステートを設定
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
+	desc.InputLayout				= MeshVertex::InputLayout;
+	desc.RasterizerState			= CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);		// ラスタライザーはデフォルト
+	desc.RasterizerState.CullMode	= D3D12_CULL_MODE_NONE;							// カリングはなし
+	desc.BlendState					= CD3DX12_BLEND_DESC(D3D12_DEFAULT);			// ブレンドステートもデフォルト
+	desc.DepthStencilState			= CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);	// 深度ステンシルはデフォルトを使う
+	desc.SampleMask					= UINT_MAX;
+	desc.PrimitiveTopologyType		= D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;		// 三角形を描画
+	
+	int numRenderTarget = 0;
+	for (auto& format : colorBufferFormat) {
+		if (format == DXGI_FORMAT_UNKNOWN) {
+			//フォーマットが指定されていない場所が来たら終わり
+			break;
+		}
+		desc.RTVFormats[numRenderTarget] = colorBufferFormat[numRenderTarget];
+		numRenderTarget++;
+	}
+	desc.NumRenderTargets	= numRenderTarget;
+	desc.DSVFormat			= DXGI_FORMAT_D32_FLOAT;
+	desc.SampleDesc.Count	= 1;
+
+
+#ifdef _DEBUG
+	auto isSuccessed = m_pipelineState.Init(
+		desc,
+		p_vsFilePath,
+		p_psFilePath,
+		m_rootSignature.Get());
+
+	if (isSuccessed == false) {
+		ELOG("Error : Failed Init PipelineState Class");
+		return false;
+	}
+#else
+	auto isSuccessed = m_pipelineState.Init(
+		pDevice,
+		desc,
+		p_vsFilePath,
+		p_psFilePath,
+		m_rootSignature.Get());
+
+	if (isSuccessed == false) {
+		ELOG("Error : Failed Init PipelineState Class");
+		return false;
+	}
+
+#endif // _DEBUG
+	
+
+	return true;
+}
+
+//=============================================================================
+// 描画前処理
+//=============================================================================
+void Material::BeginRender(RenderContext& rc){
+	rc.SetRootSignature(m_rootSignature);
+	rc.SetPipelineState(m_pipelineState);
+}
+
+//=============================================================================
+// テクスチャ初期化
+//=============================================================================
+void Material::InitTexture(
+	ID3D12Device5* pDevice,
+	ID3D12CommandQueue* pCommandQueue,
+	const ResMaterialPBR& resMaterial){
+
+
+	//アルベドマップ。
+	{
+		// 該当ファイルが存在しているなら
+		if (resMaterial.AlbedMapFileName != L"") {
+			// テクスチャをロードする
+			// TODO:.dds以外にも対応させたい
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::ALBEDO] = new Texture();
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::ALBEDO]->
+				InitFromDDSFile(resMaterial.AlbedMapFileName.c_str());
+		}
+		else {
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::ALBEDO] = nullptr;
+		}
+	}	
+	// ノーマルマップ
+	{
+		// 該当ファイルが存在しているなら
+		if (resMaterial.NormalMapFileName != L"") {
+			// テクスチャをロードする
+			// TODO:.dds以外にも対応させたい
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::NORMAL] = new Texture();
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::NORMAL]->
+				InitFromDDSFile(resMaterial.NormalMapFileName.c_str());
+		}
+		else {
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::NORMAL] = nullptr;
+		}
+	}
+
+	
+	
+}
