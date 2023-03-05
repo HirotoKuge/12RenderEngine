@@ -9,14 +9,9 @@
 //=============================================================================
 // Includes
 //=============================================================================
+#include "../stdafx.h"
 #include "GraphicsEngine.h"
-#include <d3d12.h>
-#include <stdio.h>
-#include <Windows.h>
-#include <debugapi.h>
-#include "ConstantBuffer.h"
-#include "SharedStruct.h"
-#include "../Util/Logger.h"
+
 
 //=============================================================================
 // デバッグレイヤー有効化

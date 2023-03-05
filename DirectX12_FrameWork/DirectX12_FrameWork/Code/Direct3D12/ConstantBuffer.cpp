@@ -9,9 +9,8 @@
 //=============================================================================
 // Includes
 //=============================================================================
-#include <d3dx12.h>
+#include "../stdafx.h"
 #include "ConstantBuffer.h"
-#include "GraphicsEngine.h"
 
 //=============================================================================
 // デストラクタ
@@ -33,7 +32,7 @@ ConstantBuffer::~ConstantBuffer()
 //=============================================================================
 void ConstantBuffer::Init(size_t size, void* srcData){
 
-	ID3D12Device5* pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	ID3D12Device5* pDevice =GraphicsEngine::GetInstance()->GetDevice();
 
 	if (size == 0){
 		return;
@@ -82,11 +81,11 @@ void ConstantBuffer::Init(size_t size, void* srcData){
 // CBVに登録
 //=============================================================================
 void ConstantBuffer::RegistConstantBufferView(D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle){
-	auto backBufferIndex = GraphicsEngine::GetInstance()->GetBackBufferIndex();
+	auto backBufferIndex =GraphicsEngine::GetInstance()->GetBackBufferIndex();
 	RegistConstantBufferView(descriptorHandle, backBufferIndex);
 }
 void ConstantBuffer::RegistConstantBufferView(D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle, int bufferNo){
-	ID3D12Device5* pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	ID3D12Device5* pDevice =GraphicsEngine::GetInstance()->GetDevice();
 	D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
 	desc.BufferLocation = m_pConstantBuffer[bufferNo]->GetGPUVirtualAddress();
 	desc.SizeInBytes = m_allocSize;
@@ -97,7 +96,7 @@ void ConstantBuffer::RegistConstantBufferView(D3D12_CPU_DESCRIPTOR_HANDLE descri
 // VRAM(GPU側)上の仮想アドレスを取得
 //=============================================================================
 D3D12_GPU_VIRTUAL_ADDRESS ConstantBuffer::GetGPUVirtualAddress(){
-	auto backBufferIndex = GraphicsEngine::GetInstance()->GetBackBufferIndex();
+	auto backBufferIndex =GraphicsEngine::GetInstance()->GetBackBufferIndex();
 	return m_pConstantBuffer[backBufferIndex]->GetGPUVirtualAddress();
 }
 
@@ -105,7 +104,7 @@ D3D12_GPU_VIRTUAL_ADDRESS ConstantBuffer::GetGPUVirtualAddress(){
 // マッピング済のポインタを取得
 //=============================================================================
 void* ConstantBuffer::GetMappedPtr() const{
-	auto backBufferIndex = GraphicsEngine::GetInstance()->GetBackBufferIndex();
+	auto backBufferIndex =GraphicsEngine::GetInstance()->GetBackBufferIndex();
 	return m_pConstBufferCPU[backBufferIndex];
 }
 
@@ -113,6 +112,6 @@ void* ConstantBuffer::GetMappedPtr() const{
 // コピー
 //=============================================================================
 void ConstantBuffer::CopyToVRAM(void* data){
-	auto backBufferIndex = GraphicsEngine::GetInstance()->GetBackBufferIndex();
+	auto backBufferIndex =GraphicsEngine::GetInstance()->GetBackBufferIndex();
 	memcpy(m_pConstBufferCPU[backBufferIndex], data, m_size);
 }

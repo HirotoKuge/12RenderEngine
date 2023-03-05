@@ -6,29 +6,14 @@
  * \date   February 2023
  *********************************************************************/
  
-//-----------------------------------------------------------------------------
-// Includes.
-//-----------------------------------------------------------------------------
+//=============================================================================
+// Includes
+//=============================================================================
+#include "../stdafx.h"
 #include "Sprite.h"
-#include <d3dcompiler.h>
-#include "GraphicsEngine.h"
-#include "RootSignature.h"
-#include "PipelineState.h"
-#include "SharedStruct.h"
-#include "../Util/FileUtil.h"
-#include "../Util/Logger.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
-
-// ヒープの種類
-enum {
-	DescriptorHeap_CB,
-	DescriptorHeap_SRV,
-	DescriptorHeap_UAV,
-	NumDescriptorHeap
-};
-
-
-#pragma comment(lib, "d3dcompiler.lib")
 
 namespace {
 	struct SimpleVertex {
@@ -82,8 +67,8 @@ void Sprite::Init(const SpriteInitData& initData){
 void Sprite::Draw(RenderContext& renderContext){
 	
 	// カメラを取得
-	auto pCamera2D = GraphicsEngine::GetInstance()->GetCamera2D();
-	auto pCamera3D = GraphicsEngine::GetInstance()->GetCamera3D();
+	auto pCamera2D =GraphicsEngine::GetInstance()->GetCamera2D();
+	auto pCamera3D =GraphicsEngine::GetInstance()->GetCamera3D();
 	
 	//現在のビューポートから平行投影行列を計算する 
 	D3D12_VIEWPORT viewport = renderContext.GetViewport();
@@ -176,7 +161,7 @@ void Sprite::InitVertexBufferAndIndexBuffer(const SpriteInitData& initData) {
 	float halfW = m_size.x * 0.5f;
 	float halfH = m_size.y * 0.5f;
 
-	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	auto pDevice =GraphicsEngine::GetInstance()->GetDevice();
 
 	//　スプライト用のリソース
 	SimpleVertex vertices[] =
@@ -268,28 +253,19 @@ void Sprite::InitPipelineState(const SpriteInitData& initData) {
 	// TODO:シェーダーの扱い方を考える
 	// クラスのが扱いやすそうだなとは思う
 #ifdef _DEBUG
-	bool isSuccessed = m_pipelineState.Init(
+	m_pipelineState.Init(
 		desc,
 		L"../x64/Debug/DefferdSpritePSVS.cso",
 		L"../x64/Debug/DefferdSpritePSPS.cso",
 		m_rootSignature.Get());
 
-	if (isSuccessed == false) {
-		ELOG("Error : Failed Init PipelineState Class");
-		
-	}
 #else
-	bool isSuccessed = m_pPipelineState.Init(
+	m_pPipelineState.Init(
 		pDevice,
 		desc,
 		L"DefferdSpritePS.cso",
 		L"DefferdSpritePS.cso",
 		m_pRootSignature->Get());
-
-	if (isSuccessed == false) {
-		ELOG("Error : Failed Init PipelineState Class");
-		
-	}
 
 #endif // _DEBUG
 

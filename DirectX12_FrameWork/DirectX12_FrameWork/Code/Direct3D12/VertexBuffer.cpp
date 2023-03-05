@@ -9,7 +9,7 @@
 //=============================================================================
 // Includes
 //=============================================================================
-#include "GraphicsEngine.h"
+#include "../stdafx.h"
 #include "VertexBuffer.h"
 
 //-----------------------------------------------------------------------------
@@ -29,7 +29,7 @@ VertexBuffer::~VertexBuffer()
 //=============================================================================
 void VertexBuffer::Init(uint32_t size, uint32_t stride){
 	
-	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	auto pDevice =GraphicsEngine::GetInstance()->GetDevice();
 	auto heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto rDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
 	pDevice->CreateCommittedResource(

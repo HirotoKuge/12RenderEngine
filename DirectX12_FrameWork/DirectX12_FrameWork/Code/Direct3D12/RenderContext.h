@@ -6,31 +6,13 @@
  * \date   February 2023
  *********************************************************************/
 #pragma once
-
-
-//=============================================================================
-// Include
-//=============================================================================
-#include <array>
-#include <vector>
-#include <d3d12.h>
-#include <d3dx12.h>
-#include "ComPtr.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "ConstantBuffer.h"
-#include "ConstantBuffer.h"
-#include "RootSignature.h"
-#include "PipelineState.h"
-#include "RenderTarget.h"
-#include "Texture.h"
-#include "DescriptorHeap.h"
-
-
+ 
+ 
 //-----------------------------------------------------------------------------
 // Forword Decolations
 //-----------------------------------------------------------------------------
 //!{
+
 class ConstantBuffer;
 class Texture;
 class DescriptorHeap;
@@ -209,13 +191,15 @@ public:
 	 * \param numDescriptorHeap ディスクリプタヒープの数
 	 * \param descPools			ディスクリプタヒープの配列
 	 *********************************************************************/
+	/*
 	void SetDescriptorHeaps(int numDescriptorHeap, const DescriptorHeap* descHeaps[]){
 		for (int i = 0; i < numDescriptorHeap; i++) {
 			m_descriptorHeaps[i] = descHeaps[i]->Get();
 		}
 		m_pCommandList->SetDescriptorHeaps(numDescriptorHeap, m_descriptorHeaps);
 	}
-	
+	*/
+
 	/*****************************************************************//**
 	 * \brief 定数バッファを設定
 	 *  
@@ -473,7 +457,7 @@ private:
 	ConstantBuffer*				m_constantBuffers[MAX_CONSTANT_BUFFER] = { nullptr };	//定数バッファの配列
 	Texture*					m_shaderResources[MAX_SHADER_RESOURCE] = { nullptr };	//シェーダーリソースの配列
 
-	std::vector<ComPtr<ID3D12Resource> > m_scratchResourceList;	//スクラッチリソースのリスト
+	std::vector<ComPtr<ID3D12Resource>> m_scratchResourceList;	//スクラッチリソースのリスト
 	
 	//!}
 	//-----------------------------------------------------------------------------

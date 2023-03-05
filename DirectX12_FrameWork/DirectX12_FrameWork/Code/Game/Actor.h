@@ -8,16 +8,6 @@
 
 #pragma once
 
-//=============================================================================
-// Includes. 
-//=============================================================================
-#include <iostream>
-#include <vector>
-#include <DirectXMath.h>
-#include <memory>
-#include "../Util/Vector.h"
-#include "../Util/Matrix.h"
-
 
 //=============================================================================
 // Forword Decolations
@@ -124,7 +114,7 @@ namespace Game::Object{
 		//-----------------------------------------------------------------------------
 		//!{
 		
-		std::shared_ptr<Game::Scene::Scene>	m_pSceneDI;		// 存在するシーンオブジェクトのポインタ
+		//std::shared_ptr<Game::Scene::Scene>	m_pSceneDI;		// 存在するシーンオブジェクトのポインタ
 	
 	#pragma region transformation_matrix
 	

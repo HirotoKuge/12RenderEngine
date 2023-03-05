@@ -7,15 +7,12 @@
  *********************************************************************/
 #pragma once
 
-
-//-----------------------------------------------------------------------------
+//=============================================================================
 // Includes.
-//-----------------------------------------------------------------------------
-#include <cstdint>
-#include <memory>
-#include <d3d12.h>
+//=============================================================================
 #include "Texture.h"
-#include "ComPtr.h"
+
+class GraphicsEngine;
 
 //=============================================================================
 // RenderTarget Classa
@@ -136,10 +133,10 @@ private:
 	
 	Texture m_rtTexture;
 
-	ComPtr<ID3D12Resource>		 m_pRTTextureDx12 = nullptr;	// レンダリングターゲットとなるテクスチャ
-	ComPtr<ID3D12Resource>		 m_pDSTexture = nullptr;		// 深度ステンシルバッファとなるテクスチャ
-	ComPtr<ID3D12DescriptorHeap> m_pRTVHeap = nullptr;
-	ComPtr<ID3D12DescriptorHeap> m_pDSVHeap = nullptr;
+	ComPtr<ID3D12Resource>		 m_pRTTextureDx12;	// レンダリングターゲットとなるテクスチャ
+	ComPtr<ID3D12Resource>		 m_pDSTexture;		// 深度ステンシルバッファとなるテクスチャ
+	ComPtr<ID3D12DescriptorHeap> m_pRTVHeap;
+	ComPtr<ID3D12DescriptorHeap> m_pDSVHeap;
 	
 	uint32_t m_rtvDescriptorSize = 0; //フレームバッファのディスクリプタのサイズ
 	uint32_t m_dsvDescriptorSize = 0; //深度ステンシルバッファのディスクリプタのサイズ

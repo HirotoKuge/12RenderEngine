@@ -6,30 +6,16 @@
  * \date   October 2022
  *********************************************************************/
 
-//-----------------------------------------------------------------------------
-// Includes.
-//-----------------------------------------------------------------------------
+//=============================================================================
+// Includes
+//=============================================================================
+#include "../stdafx.h"
 #include "Material.h"
-#include <DirectXMath.h>
-#include "GraphicsEngine.h"
-#include "../Util/Logger.h"
-#include "../Util/FileUtil.h"
 
-
-
-
-//-----------------------------------------------------------------------------
-// static member.
-//-----------------------------------------------------------------------------
+//=============================================================================
+// static member
+//=============================================================================
 const wchar_t* Material::DummyTag = L""; // ダミーテクスチャ用
-
-
-//-----------------------------------------------------------------------------
-// デストラクタ
-//-----------------------------------------------------------------------------
-Material::~Material()
-{}
-
 
 //=============================================================================
 // マテリアルの初期化
@@ -46,8 +32,8 @@ bool Material::Init(
 	D3D12_FILTER samplerFilter
 ){
 
-	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
-	auto pCommandQueue = GraphicsEngine::GetInstance()->GetCommandQueue();
+	auto pDevice =GraphicsEngine::GetInstance()->GetDevice();
+	auto pCommandQueue =GraphicsEngine::GetInstance()->GetCommandQueue();
 
 
 	// テクスチャを初期化
@@ -122,28 +108,18 @@ bool Material::Init(
 
 
 #ifdef _DEBUG
-	auto isSuccessed = m_pipelineState.Init(
+	m_pipelineState.Init(
 		desc,
 		p_vsFilePath,
 		p_psFilePath,
 		m_rootSignature.Get());
-
-	if (isSuccessed == false) {
-		ELOG("Error : Failed Init PipelineState Class");
-		return false;
-	}
 #else
-	auto isSuccessed = m_pipelineState.Init(
+	m_pipelineState.Init(
 		pDevice,
 		desc,
 		p_vsFilePath,
 		p_psFilePath,
 		m_rootSignature.Get());
-
-	if (isSuccessed == false) {
-		ELOG("Error : Failed Init PipelineState Class");
-		return false;
-	}
 
 #endif // _DEBUG
 	
@@ -168,7 +144,7 @@ void Material::InitTexture(
 	const ResMaterialPBR& resMaterial){
 
 
-	//アルベドマップ。
+	//アルベドマップ
 	{
 		// 該当ファイルが存在しているなら
 		if (resMaterial.AlbedMapFileName != L"") {
@@ -182,6 +158,34 @@ void Material::InitTexture(
 			m_pTexturesPBR[TEXTURE_USAGE_PBR::ALBEDO] = nullptr;
 		}
 	}	
+	// メタルネスマップ
+	{
+		// 該当ファイルが存在しているなら
+		if (resMaterial.MatalnessMapFileName != L"") {
+			// テクスチャをロードする
+			// TODO:.dds以外にも対応させたい
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::METALLIC] = new Texture();
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::METALLIC]->
+				InitFromDDSFile(resMaterial.MatalnessMapFileName.c_str());
+		}
+		else {
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::METALLIC] = nullptr;
+		}
+	}
+	// ラフネスマップ
+	{
+		// 該当ファイルが存在しているなら
+		if (resMaterial.RoughnessMapFileName != L"") {
+			// テクスチャをロードする
+			// TODO:.dds以外にも対応させたい
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::ROUGHNESS] = new Texture();
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::ROUGHNESS]->
+				InitFromDDSFile(resMaterial.RoughnessMapFileName.c_str());
+		}
+		else {
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::ROUGHNESS ] = nullptr;
+		}
+	}
 	// ノーマルマップ
 	{
 		// 該当ファイルが存在しているなら
@@ -196,7 +200,19 @@ void Material::InitTexture(
 			m_pTexturesPBR[TEXTURE_USAGE_PBR::NORMAL] = nullptr;
 		}
 	}
-
-	
+	// ハイトマップ
+	{
+		// 該当ファイルが存在しているなら
+		if (resMaterial.HeightMapFileName != L"") {
+			// テクスチャをロードする
+			// TODO:.dds以外にも対応させたい
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::HEIGHT] = new Texture();
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::HEIGHT]->
+				InitFromDDSFile(resMaterial.HeightMapFileName.c_str());
+		}
+		else {
+			m_pTexturesPBR[TEXTURE_USAGE_PBR::HEIGHT] = nullptr;
+		}
+	}
 	
 }

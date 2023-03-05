@@ -5,11 +5,9 @@
  * \author Hiroto Kuge
  * \date   October 2022
  *********************************************************************/
-
+#include "../stdafx.h"
 #include "MDLoader.h"
-#include <time.h>
-#include <iostream>
-#include "../Util/Logger.h"
+
 
 //-----------------------------------------------------------------------------
 // .mdì«Ç›çûÇ›èàóù

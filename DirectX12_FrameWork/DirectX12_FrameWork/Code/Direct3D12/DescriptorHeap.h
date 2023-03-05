@@ -8,11 +8,6 @@
  * \memo   リソース系(CBV_SRV_UAV)かサンプラー用
  *********************************************************************/
 #pragma once
-#include <vector>
-#include "GraphicsEngine.h"
-#include "ShaderResourse.h"
-#include "UnorderAccessResrouce.h"
-#include "ConstantBuffer.h"
 
 //=============================================================================
 // DescriptorHeap Class

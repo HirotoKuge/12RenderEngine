@@ -11,40 +11,16 @@
 // Includes.
 //-----------------------------------------------------------------------------
 #include <d3d12.h>
-#include <d3dx12.h>
-#include <DirectXTex.h>
-#include <dxgi.h>
-#include <dxgi1_6.h>
-#include <d3d12.h>
 #include <dxgi.h>
 #include <dxgi1_2.h>
 #include <dxgi1_3.h>
 #include <dxgi1_4.h>
 #include "../../DirectXTK/Inc/DDSTextureLoader.h"
 #include "../../DirectXTK/Inc/ResourceUploadBatch.h"
-
-#include "ComPtr.h"
-#include "RenderTarget.h"
-#include "Sprite.h"
 #include "RenderContext.h"
 #include "Camera.h"
 
 
-//-----------------------------------------------------------------------------
-// Forword Declarations
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// Linker
-//-----------------------------------------------------------------------------
-#pragma comment( lib, "d3d12.lib") 
-#pragma comment( lib, "dxgi.lib") 
-#pragma comment( lib, "dxgi.lib" )
-#pragma comment( lib, "d3dcompiler.lib" )
-
-const UINT FRAME_BUFFER_W = 1280;	//フレームバッファの幅。
-const UINT FRAME_BUFFER_H = 720;	//フレームバッファの高さ。
 
 
 
@@ -320,7 +296,7 @@ private:
 	/*****************************************************************//**
 	 * \brief 秘匿コンストラクタ(1つ以上のインスタンス生成の禁止)　
 	 *********************************************************************/
-	GraphicsEngine();
+	GraphicsEngine(){};
 	
 	/*****************************************************************//**
 	 * \brief デバイスを作成

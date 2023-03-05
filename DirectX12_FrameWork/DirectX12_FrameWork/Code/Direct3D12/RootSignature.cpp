@@ -9,13 +9,8 @@
 //=============================================================================
 // Includes
 //=============================================================================
+#include "../stdafx.h"
 #include "RootSignature.h"
-#include <d3dcompiler.h>
-#include <d3dx12.h>
-#include "GraphicsEngine.h"
-#include "SharedStruct.h"
-#include "../Util/Logger.h"
-#include "../Util/FileUtil.h"
 
 enum {
 	enDescriptorHeap_CB,
@@ -23,11 +18,6 @@ enum {
 	enDescriptorHeap_UAV,
 	enNumDescriptorHeap
 };
-
-//=============================================================================
-// Linkers
-//=============================================================================
-#pragma comment(lib, "d3dcompiler.lib")
 
 //=============================================================================
 // コンストラクタ
@@ -83,7 +73,7 @@ bool RootSignature::Init(
 	uint32_t offsetInDescriptorsFromTableStartSRV,
 	uint32_t offsetInDescriptorsFromTableStartUAV
 ){
-	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	auto pDevice =GraphicsEngine::GetInstance()->GetDevice();
 
 	CD3DX12_DESCRIPTOR_RANGE1 ranges[enNumDescriptorHeap];
 	CD3DX12_ROOT_PARAMETER1 rootParameters[enNumDescriptorHeap];

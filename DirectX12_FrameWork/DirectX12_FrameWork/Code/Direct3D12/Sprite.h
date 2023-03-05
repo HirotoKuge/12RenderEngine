@@ -10,18 +10,10 @@
 //=============================================================================
 // Includes
 //=============================================================================
-#include <array>
-#include "RenderContext.h"
-#include "Texture.h"
-#include "PipelineState.h"
-#include "RootSignature.h"
-#include "Mesh.h"
-#include "Material.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
-#include "DescriptorHeap.h"
 #include "ConstantBuffer.h"
-#include "../Util/Matrix.h"
+
 
 class Texture;
 
@@ -30,6 +22,8 @@ constexpr uint32_t MAX_TEXTURE = 32;
 
 //拡張SRVが設定されるレジスタの開始番号。
 constexpr uint32_t EXPAND_SRV_REG_START_NO = 10;
+
+class ShaderResource;
 
 //=============================================================================
 // アルファブレンディングモード

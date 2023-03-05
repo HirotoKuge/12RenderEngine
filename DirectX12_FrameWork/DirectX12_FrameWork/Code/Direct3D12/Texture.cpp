@@ -5,22 +5,12 @@
  * \author Hiroto Kuge
  * \date   October 2022
  *********************************************************************/
-
-//-----------------------------------------------------------------------------
+//=============================================================================
 // Includes.
-//-----------------------------------------------------------------------------
+//=============================================================================
+#include "../stdafx.h"
 #include "Texture.h"
-#include <DirectXTex.h>
-#include "GraphicsEngine.h"
-#include "SharedStruct.h"
-#include "ConstantBuffer.h"
-#include "../Util/Logger.h"
-#include "../Util/FileUtil.h"
-#include "../../../DirectXTK/Inc/ResourceUploadBatch.h"
-#include "../../../DirectXTK/Inc/DDSTextureLoader.h"
 
-
-#pragma comment(lib, "DirectXTex.lib")
 
 
 //=============================================================================
@@ -65,7 +55,7 @@ void Texture::InitFromD3DResource(ID3D12Resource* texture){
 //=============================================================================
 void Texture::RegistShaderResourceView(D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle, int bufferNo){
 	if (m_pTexture) {
-		auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+		auto pDevice =GraphicsEngine::GetInstance()->GetDevice();
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		srvDesc.Format = m_textureDesc.Format;
@@ -79,7 +69,7 @@ void Texture::RegistShaderResourceView(D3D12_CPU_DESCRIPTOR_HANDLE descriptorHan
 // DDSファイルからテクスチャをロード
 //=============================================================================
 void Texture::LoadTextureFromDDSFile(const wchar_t* filePath){
-	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	auto pDevice =GraphicsEngine::GetInstance()->GetDevice();
 	
 	DirectX::ResourceUploadBatch re(pDevice);
 	re.Begin();
@@ -109,7 +99,7 @@ void Texture::LoadTextureFromDDSFile(const wchar_t* filePath){
 // メモリからテクスチャをロード
 //=============================================================================
 void Texture::LoadTextureFromMemory(const char* memory, unsigned int size){
-	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	auto pDevice =GraphicsEngine::GetInstance()->GetDevice();
 
 	DirectX::ResourceUploadBatch re(pDevice);
 	re.Begin();
