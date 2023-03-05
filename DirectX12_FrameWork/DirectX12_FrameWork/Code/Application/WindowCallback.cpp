@@ -4,7 +4,7 @@
  * \author Hiroto Kuge
  * \date   September 2022
  *********************************************************************/
-
+#include "../stdafx.h"
 #include "WindowCallback.h"
 
 LRESULT WindowCallback::OnKeyDown(HWND hWnd,UINT hMessage,WPARAM hWParam,LPARAM hLParam){

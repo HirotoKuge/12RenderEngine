@@ -5,6 +5,7 @@
  * \author Hiroto Kuge
  * \date   March 2023
  *********************************************************************/
+#include "../stdafx.h"
 #include "DescriptorHeap.h"
 
 
@@ -41,7 +42,7 @@ DescriptorHeap::~DescriptorHeap(){
 // サンプラー
 //=============================================================================
 void DescriptorHeap::CommitSamplerHeap(){
-	ID3D12Device5* pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	ID3D12Device5* pDevice =GraphicsEngine::GetInstance()->GetDevice();
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 
 	srvHeapDesc.NumDescriptors = m_numSamplerDesc;
@@ -77,7 +78,7 @@ int g_numDescriptorHeap = 0;
 // ヒープへの登録を確定
 //=============================================================================
 void DescriptorHeap::Commit(){
-	ID3D12Device5* pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	ID3D12Device5* pDevice =GraphicsEngine::GetInstance()->GetDevice();
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 
 	srvHeapDesc.NumDescriptors = m_numShaderResource + m_numConstantBuffer + m_numUavResource;
@@ -142,54 +143,3 @@ void DescriptorHeap::Commit(){
 }
 
 
-/*****************************************************************//**
- * \brief ディスクリプタヒープを取得
- *
- * \return ディスクリプタヒープ
- *********************************************************************/
- ID3D12DescriptorHeap* DescriptorHeap::Get()const {
-	auto backBufferIndex = GraphicsEngine::GetInstance()->GetBackBufferIndex();
-	return m_descriptorHeap[backBufferIndex];
-}
-
-/*****************************************************************//**
- * \brief 定数バッファの先頭ディスクリプタハンドルを取得
- *
- * \return 定数バッファの先頭ディスクリプタハンドル
- *********************************************************************/
- D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeap::GetConstantBufferGpuDescriptorStartHandle() const {
-	auto backBufferIndex = GraphicsEngine::GetInstance()->GetBackBufferIndex();
-	return m_cbGpuDescriptorStart[backBufferIndex];
-}
-
-/*****************************************************************//**
- * \brief シェーダーリソース(テクスチャ)の先頭ディスクリプタハンドルを取得
- *
- * \return シェーダーリソース(テクスチャ)の先頭ディスクリプタハンドル
- *********************************************************************/
- D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeap::GetShaderResourceGpuDescriptorStartHandle() const {
-	auto backBufferIndex = GraphicsEngine::GetInstance()->GetBackBufferIndex();
-	return m_srGpuDescriptorStart[backBufferIndex];
-}
-
-/*****************************************************************//**
- * \brief UAVリソースの先頭ディスクリプタハンドルを取得
- *
- * \return UAVリソースの先頭ディスクリプタハンドル
- *********************************************************************/
- D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeap::GetUavResourceGpuDescriptorStartHandle() const {
-	auto backBufferIndex = GraphicsEngine::GetInstance()->GetBackBufferIndex();
-	return m_uavGpuDescriptorStart[backBufferIndex];
-}
-
-/*****************************************************************//**
- * \brief サンプラーの先頭ディスクリプタハンドルを取得
- *
- * \return サンプラーの先頭ディスクリプタハンドル
- *********************************************************************/
- D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeap::GetSamplerResourceGpuDescriptorStartHandle() const {
-	auto backBufferIndex = GraphicsEngine::GetInstance()->GetBackBufferIndex();
-	return m_samplerGpuDescriptorStart[backBufferIndex];
-}
-
-#pragma endregio

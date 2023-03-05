@@ -7,34 +7,21 @@
  *********************************************************************/
 #pragma once
 
-//-----------------------------------------------------------------------------
-// Includes.
-//-----------------------------------------------------------------------------
-#include "SharedStruct.h"
-#include <array>
-#include "Material.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "ConstantBuffer.h"
-#include "ShaderResourse.h"
-#include "DescriptorHeap.h"
-#include "RenderContext.h"
-#include "MDLoader.h"
-#include "../Util/Matrix.h"
-#include "../Util/math.h"
-
 
 class RenderContext;
 class Material;
 class ShaderResource;
+class DescriptorHeap;
+
+const int MAX_MODEL_EXPAND_SRV = 6;
 
 //=============================================================================
 // 単位メッシュ
 //=============================================================================
 struct UnitMesh {
-	VertexBuffer	vertexBuffer;		//頂点バッファ
-	IndexBuffer		indexBuffer;		//インデックスバッファ
-	Material		material;			//マテリアル
+	VertexBuffer				vertexBuffer;		//頂点バッファ
+	std::vector<IndexBuffer*>	pIndexBufferArray;	//インデックスバッファ
+	std::vector<Material*>		pMaterials;			//マテリアル
 };
 
  //-----------------------------------------------------------------------------
@@ -141,7 +128,7 @@ private:
 	ConstantBuffer m_commonConstantBuffer;					//メッシュ共通の定数バッファ
 	ConstantBuffer m_expandConstantBuffer;					//ユーザー拡張用の定数バッファ
 	std::array<ShaderResource*, MAX_MODEL_EXPAND_SRV> m_pExpandShaderResourceViews = { nullptr };	//ユーザー拡張シェーダーリソースビュー。
-	std::vector<UnitMesh*> m_meshs;						//メッシュ
+	std::vector<UnitMesh*> m_pMeshs;						//メッシュ
 	DescriptorHeap m_descriptorHeap;					//ディスクリプタヒープ
 	void* m_expandData = nullptr;						//ユーザー拡張データ
 
@@ -166,7 +153,7 @@ private:
 	 * \param colorBufferFormats			レンダーターゲットのフォーマット
 	 * \param samplerFilter					サンプラーフィルター
 	 *********************************************************************/
-	void CreateMeshFormRes(
+	void CreateMeshFromRes(
 		const ResMesh& meshRes,
 		uint32_t meshNo,
 		uint32_t& materialNum,

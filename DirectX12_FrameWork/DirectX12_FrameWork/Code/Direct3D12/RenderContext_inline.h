@@ -1,15 +1,9 @@
-/*****************************************************************//**
- * \file   RenderContext.cpp
- * \brief  レンダリングコンテキスト
- * 
- * \author Hiroto Kuge
- * \date   March 2023
- *********************************************************************/
+#pragma once
 #include "RenderContext.h"
 #include "RenderTarget.h"
 
 
-void RenderContext::SetDescriptorHeap(DescriptorHeap& descHeap){
+inline void RenderContext::SetDescriptorHeap(DescriptorHeap& descHeap) {
 	m_descriptorHeaps[0] = descHeap.Get();
 	m_pCommandList->SetDescriptorHeaps(1, m_descriptorHeaps);
 
@@ -25,7 +19,7 @@ void RenderContext::SetDescriptorHeap(DescriptorHeap& descHeap){
 	}
 }
 
-void RenderContext::SetComputeDescriptorHeap(DescriptorHeap& descHeap){
+inline void RenderContext::SetComputeDescriptorHeap(DescriptorHeap& descHeap) {
 	m_descriptorHeaps[0] = descHeap.Get();
 	m_pCommandList->SetDescriptorHeaps(1, m_descriptorHeaps);
 
@@ -41,26 +35,27 @@ void RenderContext::SetComputeDescriptorHeap(DescriptorHeap& descHeap){
 	}
 }
 
-void RenderContext::WaitUntilFinishDrawingToRenderTarget(RenderTarget& renderTarget){
+inline void RenderContext::WaitUntilFinishDrawingToRenderTarget(RenderTarget& renderTarget) {
 	WaitUntilFinishDrawingToRenderTarget(renderTarget.GetRenderTargetTexture().Get());
 }
- void RenderContext::WaitUntilToPossibleSetRenderTarget(RenderTarget& renderTarget)
-{
+
+inline void RenderContext::WaitUntilToPossibleSetRenderTarget(RenderTarget& renderTarget){
 	WaitUntilToPossibleSetRenderTarget(renderTarget.GetRenderTargetTexture().Get());
 }
- void RenderContext::WaitUntilToPossibleSetRenderTargets(int numRt, RenderTarget* renderTargets[])
-{
+
+inline void RenderContext::WaitUntilToPossibleSetRenderTargets(int numRt, RenderTarget* renderTargets[]){
 	for (int i = 0; i < numRt; i++) {
 		WaitUntilToPossibleSetRenderTarget(*renderTargets[i]);
 	}
 }
- void RenderContext::WaitUntilFinishDrawingToRenderTargets(int numRt, RenderTarget* renderTargets[])
-{
+
+inline void RenderContext::WaitUntilFinishDrawingToRenderTargets(int numRt, RenderTarget* renderTargets[]){
 	for (int i = 0; i < numRt; i++) {
 		WaitUntilFinishDrawingToRenderTarget(*renderTargets[i]);
 	}
 }
-void RenderContext::SetRenderTargets(UINT numRT, RenderTarget* renderTargets[]){
+
+inline void RenderContext::SetRenderTargets(UINT numRT, RenderTarget* renderTargets[]) {
 	//d
 	D3D12_CPU_DESCRIPTOR_HANDLE rtDSHandleTbl[32];
 	int rtNo = 0;
@@ -79,7 +74,7 @@ void RenderContext::SetRenderTargets(UINT numRT, RenderTarget* renderTargets[]){
 
 }
 
-void RenderContext::SetRenderTargetAndViewport(RenderTarget& renderTarget){
+inline void RenderContext::SetRenderTargetAndViewport(RenderTarget& renderTarget) {
 	D3D12_VIEWPORT viewport;
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
@@ -92,7 +87,7 @@ void RenderContext::SetRenderTargetAndViewport(RenderTarget& renderTarget){
 	SetRenderTarget(renderTarget);
 }
 
-void RenderContext::SetRenderTargetsAndViewport(UINT numRT, RenderTarget* renderTargets[]){
+inline void RenderContext::SetRenderTargetsAndViewport(UINT numRT, RenderTarget* renderTargets[]) {
 	D3D12_VIEWPORT viewport;
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
@@ -104,7 +99,7 @@ void RenderContext::SetRenderTargetsAndViewport(UINT numRT, RenderTarget* render
 	SetRenderTargets(numRT, renderTargets);
 }
 
-void RenderContext::ClearRenderTargetViews(int numRt, RenderTarget* renderTargets[]){
+inline void RenderContext::ClearRenderTargetViews(int numRt, RenderTarget* renderTargets[]) {
 	if (renderTargets[0]->IsExsitDepthStencilBuffer()) {
 		//深度バッファがある。
 		ClearDepthStencilView(renderTargets[0]->GetDSVCpuDescriptorHandle(), renderTargets[0]->GetDSVClearValue());

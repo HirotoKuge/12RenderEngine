@@ -6,7 +6,6 @@
  *********************************************************************/
 #pragma once
 
-#include<Windows.h>
 
 class WindowCallback{
 public:

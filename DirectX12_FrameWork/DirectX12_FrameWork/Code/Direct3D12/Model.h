@@ -9,23 +9,14 @@
 #pragma once
 
 //=============================================================================
-// Includes
+// Include 
 //=============================================================================
-#include "MDLoader.h"
-#include "GraphicsEngine.h"
-#include "DescriptorHeap.h"
 #include "Mesh.h"
-#include "Material.h"
-#include "ShaderResourse.h"
-#include "../Util/Matrix.h"
-
 
 //=============================================================================
 // Forword Decolations 
 //=============================================================================
 class ShaderResource;
-
-
 
 //=============================================================================
 // Model InitData

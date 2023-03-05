@@ -4,7 +4,7 @@
  * \author Hiroto Kuge
  * \date   September 2022
  *********************************************************************/
-
+#include "../stdafx.h"
 #include "Window.h"
 #include "WindowCallback.h"
 

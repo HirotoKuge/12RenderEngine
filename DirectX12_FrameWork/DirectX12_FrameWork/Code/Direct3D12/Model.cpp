@@ -9,17 +9,13 @@
 //=============================================================================
 // Includes
 //=============================================================================
+#include "../stdafx.h"
 #include "Model.h"
-#include <d3dcompiler.h>
-#include "GraphicsEngine.h"
-#include "RootSignature.h"
-#include "PipelineState.h"
-#include "../Util/FileUtil.h"
-#include "../Util/Logger.h"
+#include "Material.h"
 
-
-#pragma comment(lib, "d3dcompiler.lib")
-
+//=============================================================================
+// 初期化処理
+//=============================================================================
 void Model::Init(const ModelInitData& initData){
 	
 	m_meshParts.InitFromFile(
@@ -39,14 +35,19 @@ void Model::Init(const ModelInitData& initData){
 
 }
 
-
+//=============================================================================
+// ワールド変換行列を更新
+//=============================================================================
 void Model::UpdateWorldMatrix(Vector3 pos, Quaternion rot, Vector3 scale){
 	m_worldMtx = CalcWorldMatrix(pos, rot, scale);
 }
 
+//=============================================================================
+// 描画処理
+//=============================================================================
 void Model::Draw(RenderContext& rc){
 	//3Dカメラ取得
-	auto pCamara3D = GraphicsEngine::GetInstance()->GetCamera3D();
+	auto pCamara3D =GraphicsEngine::GetInstance()->GetCamera3D();
 	
 	m_meshParts.Draw(
 		rc,
@@ -58,7 +59,6 @@ void Model::Draw(RenderContext& rc){
 void Model::Draw(RenderContext& rc, Camera& camera){
 	Draw(rc, camera.GetViewMatrix(), camera.GetProjectionMatrix());
 }
-
 void Model::Draw(RenderContext& rc, const Matrix& viewMatrix, const Matrix& projMatrix){
 	m_meshParts.Draw(
 		rc,
@@ -68,9 +68,12 @@ void Model::Draw(RenderContext& rc, const Matrix& viewMatrix, const Matrix& proj
 	);
 }
 
+//=============================================================================
+// インスタンシング描画
+//=============================================================================
 void Model::DrawInstancing(RenderContext& rc, int numInstance){
 	//3Dカメラ取得
-	auto pCamara3D = GraphicsEngine::GetInstance()->GetCamera3D();
+	auto pCamara3D =GraphicsEngine::GetInstance()->GetCamera3D();
 
 	// インスタンスの数が0以上なら描画。
 	m_meshParts.DrawInstancing(

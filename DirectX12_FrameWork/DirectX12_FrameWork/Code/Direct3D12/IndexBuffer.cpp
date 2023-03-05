@@ -9,8 +9,8 @@
 //=============================================================================
 // Includes.
 //=============================================================================
+#include "../stdafx.h"
 #include "IndexBuffer.h"
-#include "GraphicsEngine.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ 
@@ -43,7 +43,7 @@ void IndexBuffer::Init(uint32_t size, uint32_t stride){
 		m_sizeInBytes = size;
 	}
 	
-	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	auto pDevice =GraphicsEngine::GetInstance()->GetDevice();
 	auto heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto rDesc = CD3DX12_RESOURCE_DESC::Buffer(m_sizeInBytes);
 	auto hr = pDevice->CreateCommittedResource(

@@ -9,8 +9,8 @@
 //=============================================================================
 // Includes
 //=============================================================================
+#include "../stdafx.h"
 #include "GPUBuffer.h"
-#include "GraphicsEngine.h"
 
 //=============================================================================
 // ‰Šú‰»
@@ -26,7 +26,7 @@ void GPUBuffer::Init(D3D12_RESOURCE_DESC desc){
 		0
 	};
 
-	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	auto pDevice =GraphicsEngine::GetInstance()->GetDevice();
 
 	pDevice->CreateCommittedResource(
 		&kDefaultHeapProps,
@@ -51,7 +51,7 @@ void GPUBuffer::RegistUnorderAccessView(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, i
 		std::abort();
 	}
 
-	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	auto pDevice =GraphicsEngine::GetInstance()->GetDevice();
 	pDevice->CreateUnorderedAccessView(
 		m_buffer,
 		nullptr,

@@ -9,24 +9,8 @@
 //=============================================================================
 // Includes
 //=============================================================================
+#include "../stdafx.h"
 #include "App.h"
-#include <Windows.h>
-#include <Crtdbg.h>
-#include <chrono>
-#include <thread>
-#include <time.h>
-#include "Window.h"
-#include "../Direct3D12/GraphicsEngine.h"
-#include "../Direct3D12/Model.h"
-#include "../Util/FileUtil.h"
-
-
-#pragma comment (lib,"winmm.lib")
-#pragma comment (lib,"dxgi.lib")
-#pragma comment (lib,"d3d11.lib")
-#pragma comment (lib,"directxtex.lib")
-#pragma comment (lib,"d3dcompiler.lib")
-#pragma comment (lib,"dxguid.lib")
 
 //-----------------------------------------------------------------------------
 // スタティック　メンバー
@@ -156,7 +140,10 @@ unsigned long Application::MainLoop(){
 		//!} 
 
 		// 描画の実際の処理を発行：レンダー層
-		
+		GraphicsEngine::GetInstance()->BeginRender();
+		GraphicsEngine::GetInstance()->EndRender();
+
+
 	}
 
 	//ゲームの終了処理

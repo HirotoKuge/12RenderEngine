@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Application/App.h"
 
 INT APIENTRY WinMain(HINSTANCE  h_hInst,HINSTANCE  h_hPrevInst,LPSTR h_lpszArgs,int h_nWinMode){

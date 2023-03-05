@@ -1,10 +1,5 @@
 #pragma once
 
-#include <DirectXMath.h>
-#include <d3dx12.h>
-#include "ComPtr.h"
-#include "../Util/Vector.h"
-
 //=============================================================================
 // unnamed namespace
 //=============================================================================
@@ -162,6 +157,3 @@ struct ResMaterialPBR {
 	std::wstring NormalMapFileName = L"";		// 法線マップファイルパス
 	std::wstring HeightMapFileName = L"";		// ハイトマップパス	
 }; 
-
-
-constexpr int MAX_RENDERING_TARGET = D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT;	//レンダリングターゲットの最大数

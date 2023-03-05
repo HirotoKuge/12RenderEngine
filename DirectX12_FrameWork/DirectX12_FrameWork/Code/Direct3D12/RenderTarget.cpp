@@ -5,13 +5,9 @@
  * \author Hiroto Kuge
  * \date   October 2022
  *********************************************************************/
+#include "../stdafx.h"
 #include "RenderTarget.h"
-
-#include <cassert>
 #include "GraphicsEngine.h"
-#include "../Util/Logger.h"
-
-
 
 //=============================================================================
 // デストラクタ
@@ -42,7 +38,7 @@ bool RenderTarget::Create(
 	DXGI_FORMAT depthStencilFormat, 
 	float clearColor[4]
 ){
-	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	auto pDevice =GraphicsEngine::GetInstance()->GetDevice();
 	
 	m_width = width;
 	m_height = height;
