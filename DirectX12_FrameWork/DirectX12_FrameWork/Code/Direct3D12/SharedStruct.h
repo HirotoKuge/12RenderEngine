@@ -68,25 +68,27 @@ public:
 	DirectX::XMFLOAT3   Normal;
 	DirectX::XMFLOAT2   TexCoord;
 	DirectX::XMFLOAT3   Tangent;
-	
+	DirectX::XMFLOAT3   BiTangent;
+
 	MeshVertex() = default;
-	
+
 	MeshVertex(
 		DirectX::XMFLOAT3 const& position,
 		DirectX::XMFLOAT3 const& normal,
 		DirectX::XMFLOAT2 const& texcoord,
-		DirectX::XMFLOAT3 const& tangent)
+		DirectX::XMFLOAT3 const& tangent,
+		DirectX::XMFLOAT3 const& biTangent)
 		: Position(position)
 		, Normal(normal)
 		, TexCoord(texcoord)
 		, Tangent(tangent)
-	{ /* DO_NOTHING */
-	}
-	
+		, BiTangent(biTangent)
+	{ /* DO_NOTHING */}
+
 	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
 	
 private:
-	static const int InputElementCount = 4;
+	static const int InputElementCount = 5;
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 

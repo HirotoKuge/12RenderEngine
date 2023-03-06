@@ -101,7 +101,7 @@ bool RootSignature::Init(
 	D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
 	auto hr = pDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(m_pRootSignature.GetAddressOf()));
 	if (FAILED(hr)) {
-		//ルートシグネチャの作成に失敗した。
+		//ルートシグネチャの作成に失敗した
 		return false;
 	}
 	return true;

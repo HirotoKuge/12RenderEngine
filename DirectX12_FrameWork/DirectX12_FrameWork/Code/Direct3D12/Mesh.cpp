@@ -114,19 +114,20 @@ void Mesh::CreateMeshFromRes(
 	int vertexStride = sizeof(MeshVertex);	 // 単位頂点のサイズを計算
 	auto mesh = new UnitMesh;
 	mesh->vertexBuffer.Init(vertexStride * numVertex, vertexStride);
-	mesh->vertexBuffer.Copy((void*)&meshRes.Vertices);
+	auto vertices = meshRes.Vertices.data();
+	mesh->vertexBuffer.Copy((void*)vertices);
 
 	// インデックスバッファを作成
 	auto ib = new IndexBuffer;
 	ib->Init(static_cast<int>(meshRes.Indices.size()) * 4, 4);
-	ib->Copy((uint32_t*)&meshRes.Indices);
+	ib->Copy((uint32_t*)&meshRes.Indices[0]);
 	mesh->pIndexBufferArray.push_back(ib);
 
 	// マテリアルを作成
 	// TODO:マテリアルの読み込み機構を作る
 	ResMaterialPBR resMat;
-	resMat.AlbedMapFileName = L"default.dds";
-	resMat.NormalMapFileName = L"normal.dds";
+	resMat.AlbedMapFileName = L"assets/teapot/default.dds";
+	resMat.NormalMapFileName = L"assets/teapot/normal.dds";
 	resMat.Matallic = 0.5f;
 	resMat.Roughness = 0.5f;
 
@@ -143,7 +144,7 @@ void Mesh::CreateMeshFromRes(
 		NUM_SRV_ONE_MATERIAL * materialNum,
 		samplerFilter
 	);
-	//作成したマテリアル数をカウントする。
+	//作成したマテリアル数をカウントする
 	materialNum++;
 	mesh->pMaterials.push_back(mat);
 		
@@ -155,7 +156,7 @@ void Mesh::CreateMeshFromRes(
 //=============================================================================
 void Mesh::DrawCommon(RenderContext& rc, const Matrix& worldMtx, const Matrix& viewMtx, const Matrix& projMtx){
 	//メッシュごとにドロー
-	//プリミティブのトポロジーはトライアングルリストのみ。
+	//プリミティブのトポロジーはトライアングルリストのみ
 	rc.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//定数バッファを更新する
@@ -245,7 +246,7 @@ void Mesh::CreateDescriptorHeaps(){
 
 	for (auto& mesh : m_pMeshs) {
 		for (int matNo = 0; matNo < mesh->pMaterials.size(); matNo++) {
-			//ディスクリプタヒープにディスクリプタを登録していく。
+			//ディスクリプタヒープにディスクリプタを登録していく
 			m_descriptorHeap.RegistShaderResource(srvNo, mesh->pMaterials[matNo]->GetAlbedoMap());			//アルベドマップ
 			m_descriptorHeap.RegistShaderResource(srvNo + 1,mesh->pMaterials[matNo]->GetNormalMap());		//法線マップ
 			m_descriptorHeap.RegistShaderResource(srvNo + 2,mesh->pMaterials[matNo]->GetNormalMap());		//法線マップ

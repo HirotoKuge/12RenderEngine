@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   RenderContext.h
- * \brief  レンダーコンテキスト
+ * \brief  レンダリングコンテキスト
  * 
  * \author Hiroto Kuge
  * \date   February 2023
@@ -106,7 +106,7 @@ public:
 	 * \param viewport ビューポート
 	 *********************************************************************/
 	void SetViewportAndScissor(D3D12_VIEWPORT& viewport){
-		//シザリング矩形も設定する。
+		//シザリング矩形も設定する
 		D3D12_RECT scissorRect;
 		scissorRect.bottom = static_cast<LONG>(viewport.Height);
 		scissorRect.top = 0;
@@ -211,7 +211,7 @@ public:
 			m_constantBuffers[registerNo] = &cb;
 		}
 		else {
-			//範囲外アクセス。
+			//範囲外アクセス
 			std::abort();
 		}
 	}
@@ -227,7 +227,7 @@ public:
 			m_shaderResources[registerNo] = &texture;
 		}
 		else {
-			//範囲外アクセス。
+			//範囲外アクセス
 			std::abort();
 		}
 	}
@@ -392,7 +392,7 @@ public:
 	 *********************************************************************/
 	void Reset(ID3D12CommandAllocator* commandAllocator, ID3D12PipelineState* pipelineState){
 		m_pCommandList->Reset(commandAllocator, pipelineState);
-		//スクラッチリソースをクリア。
+		//スクラッチリソースをクリア
 		m_scratchResourceList.clear();
 	}
 	

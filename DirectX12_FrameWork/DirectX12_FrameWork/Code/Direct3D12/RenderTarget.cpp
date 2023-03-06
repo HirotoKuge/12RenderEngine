@@ -59,7 +59,7 @@ bool RenderTarget::Create(
 		MessageBoxA(nullptr, "レンダリングターゲットとなるテクスチャの作成に失敗", "エラー", MB_OK);
 		return false;
 	}
-	//ディスクリプタを作成する。
+	//ディスクリプタを作成する
 	CreateDescriptor(pDevice);
 
 	// クリアカラー
@@ -74,7 +74,7 @@ bool RenderTarget::Create(
 // ディスクリプタヒープを作成
 //=============================================================================
 bool RenderTarget::CreateDescriptorHeap(ID3D12Device5*& pDevice){
-	//RTV用のディスクリプタヒープを作成する。
+	//RTV用のディスクリプタヒープを作成する
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
 	desc.NumDescriptors = GraphicsEngine::FRAME_BUFFER_COUNT;
 	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -143,7 +143,7 @@ bool RenderTarget::CreateRenderTargetTexture(
 		clearValue.Color[2] = 0.0f;
 		clearValue.Color[3] = 1.0f;
 	}
-	//リソースを作成。
+	//リソースを作成
 	auto prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	auto hr = pDevice->CreateCommittedResource(
 		&prop,
@@ -155,7 +155,7 @@ bool RenderTarget::CreateRenderTargetTexture(
 	);
 
 	if (FAILED(hr)) {
-		//作成に失敗。
+		//作成に失敗
 		return false;
 	}
 
@@ -197,7 +197,7 @@ bool RenderTarget::CreateDepthStencilTexture(ID3D12Device5*& pDevice, uint32_t w
 		IID_PPV_ARGS(&m_pDSTexture)
 	);
 	if (FAILED(hr)) {
-		//深度ステンシルバッファの作成に失敗。
+		//深度ステンシルバッファの作成に失敗
 		return false;
 	}
 	return true;
@@ -207,7 +207,7 @@ bool RenderTarget::CreateDepthStencilTexture(ID3D12Device5*& pDevice, uint32_t w
 // ディスクリプタを作成
 //=============================================================================
 void RenderTarget::CreateDescriptor(ID3D12Device5*& pDevice){
-	//カラーテクスチャのディスクリプタを作成。
+	//カラーテクスチャのディスクリプタを作成
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_pRTVHeap->GetCPUDescriptorHandleForHeapStart();
 
 	pDevice->CreateRenderTargetView(m_rtTexture.Get(), nullptr, rtvHandle);

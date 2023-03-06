@@ -20,7 +20,7 @@ class Texture;
 //スプライトに設定できる最大テクスチャ数
 constexpr uint32_t MAX_TEXTURE = 32;
 
-//拡張SRVが設定されるレジスタの開始番号。
+//拡張SRVが設定されるレジスタの開始番号
 constexpr uint32_t EXPAND_SRV_REG_START_NO = 10;
 
 class ShaderResource;
@@ -43,9 +43,9 @@ struct SpriteInitData {
 
 	std::array<Texture*, MAX_TEXTURE>		pTextures = { nullptr };	// 外部指定のテクスチャ(GBuffer)	
 	std::array<const wchar_t*, MAX_TEXTURE> ddsFilePath = { nullptr };	// DDSファイルのファイルパス
-	void*			expandConstantBuffer = nullptr;						// ユーザー拡張の定数バッファ
+	void*			pExpandConstantBuffer = nullptr;						// ユーザー拡張の定数バッファ
 	uint32_t		expandConstantBufferSize = 0;						// ユーザー拡張の定数バッファのサイズ
-	ShaderResource* pExpandShaderResoruceView = nullptr;				// ユーザー拡張のシェーダーリソース。
+	ShaderResource* pExpandShaderResoruceView = nullptr;				// ユーザー拡張のシェーダーリソース
 	AlphaBlendMode	alphaBlendMode = AlphaBlendMode_None;				// アルファブレンディングモード
 	D3D12_FILTER	samplerFilter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	// サンプラのフィルター
 	
@@ -58,7 +58,7 @@ struct SpriteInitData {
 	DXGI_FORMAT_UNKNOWN,
 	DXGI_FORMAT_UNKNOWN,
 	DXGI_FORMAT_UNKNOWN,
-	};	//レンダリングするカラーバッファのフォーマット。
+	};	//レンダリングするカラーバッファのフォーマット
 
 };
 
@@ -90,7 +90,7 @@ public:
 	/*****************************************************************//**
 	 * \brief デストラクタ
 	 *********************************************************************/
-	~Sprite();
+	virtual ~Sprite();
 
 	/*****************************************************************//**
 	 * \brief 初期化処理
@@ -136,10 +136,6 @@ private:
 	Quaternion	m_quaternion;	// 回転
 	Matrix		m_worldMtx;		// ワールド変換行列
 
-	RootSignature	m_rootSignature;	// ルートシグネチャ
-	PipelineState	m_pipelineState;	// パイプラインステート
-	DescriptorHeap	m_descriptorHeap;	// ディスクリプタヒープ
-
 	// スプライトで使うローカル定数バッファ
 	struct SpriteConstantBuffer {
 		Matrix mvp;
@@ -150,6 +146,10 @@ private:
 	ConstantBuffer			m_constantBufferGPU;					 // GPU側の定数バッファ
 	void*					m_userExpandConstantBufferCPU = nullptr; // ユーザー拡張の定数バッファ(CPU側)
 	ConstantBuffer			m_userExpandConstantBufferGPU;			 // ユーザー拡張の定数バッファ(GPU側)
+	
+	DescriptorHeap	m_descriptorHeap;	// ディスクリプタヒープ
+	RootSignature	m_rootSignature;	// ルートシグネチャ
+	PipelineState	m_pipelineState;	// パイプラインステート
 
 	//!}
 	//-----------------------------------------------------------------------------

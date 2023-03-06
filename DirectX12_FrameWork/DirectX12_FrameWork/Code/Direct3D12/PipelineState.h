@@ -52,6 +52,12 @@ public:
 		const wchar_t* pPsPath,
 		ID3D12RootSignature* pRootSignature);
 
+	/*****************************************************************//**
+	 * \brief èâä˙âª
+	 * \param desc	èâä˙âªê›íË
+	 *********************************************************************/
+	void Init(D3D12_GRAPHICS_PIPELINE_STATE_DESC desc);
+	void Init(D3D12_COMPUTE_PIPELINE_STATE_DESC desc);
 
 
 	/*****************************************************************//**

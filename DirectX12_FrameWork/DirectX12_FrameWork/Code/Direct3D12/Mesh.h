@@ -127,7 +127,7 @@ private:
 
 	ConstantBuffer m_commonConstantBuffer;					//メッシュ共通の定数バッファ
 	ConstantBuffer m_expandConstantBuffer;					//ユーザー拡張用の定数バッファ
-	std::array<ShaderResource*, MAX_MODEL_EXPAND_SRV> m_pExpandShaderResourceViews = { nullptr };	//ユーザー拡張シェーダーリソースビュー。
+	std::array<ShaderResource*, MAX_MODEL_EXPAND_SRV> m_pExpandShaderResourceViews = { nullptr };	//ユーザー拡張シェーダーリソースビュー
 	std::vector<UnitMesh*> m_pMeshs;						//メッシュ
 	DescriptorHeap m_descriptorHeap;					//ディスクリプタヒープ
 	void* m_expandData = nullptr;						//ユーザー拡張データ

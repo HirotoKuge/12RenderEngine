@@ -26,7 +26,7 @@ Texture::~Texture(){
 // DDSファイルから初期化
 //=============================================================================
 void Texture::InitFromDDSFile(const wchar_t* filePath){
-	//DDSファイルからテクスチャをロード。
+	//DDSファイルからテクスチャをロード
 	LoadTextureFromDDSFile(filePath);
 }
 
@@ -86,7 +86,7 @@ void Texture::LoadTextureFromDDSFile(const wchar_t* filePath){
 	re.End(GraphicsEngine::GetInstance()->GetCommandQueue());
 
 	if (FAILED(hr)) {
-		//テクスチャの作成に失敗しました。
+		//テクスチャの作成に失敗しました
 		return;
 	}
 

@@ -7,7 +7,7 @@ inline void RenderContext::SetDescriptorHeap(DescriptorHeap& descHeap) {
 	m_descriptorHeaps[0] = descHeap.Get();
 	m_pCommandList->SetDescriptorHeaps(1, m_descriptorHeaps);
 
-	//ディスクリプタテーブルに登録する。
+	//ディスクリプタテーブルに登録する
 	if (descHeap.IsRegistConstantBuffer()) {
 		SetGraphicsRootDescriptorTable(0, descHeap.GetConstantBufferGpuDescriptorStartHandle());
 	}
@@ -23,7 +23,7 @@ inline void RenderContext::SetComputeDescriptorHeap(DescriptorHeap& descHeap) {
 	m_descriptorHeaps[0] = descHeap.Get();
 	m_pCommandList->SetDescriptorHeaps(1, m_descriptorHeaps);
 
-	//ディスクリプタテーブルに登録する。
+	//ディスクリプタテーブルに登録する
 	if (descHeap.IsRegistConstantBuffer()) {
 		SetComputeRootDescriptorTable(0, descHeap.GetConstantBufferGpuDescriptorStartHandle());
 	}
@@ -63,12 +63,12 @@ inline void RenderContext::SetRenderTargets(UINT numRT, RenderTarget* renderTarg
 		rtDSHandleTbl[rtNo] = renderTargets[rtNo]->GetRTVCpuDescriptorHandle();
 	}
 	if (renderTargets[0]->IsExsitDepthStencilBuffer()) {
-		//深度バッファがある。
+		//深度バッファがある
 		D3D12_CPU_DESCRIPTOR_HANDLE dsDS = renderTargets[0]->GetDSVCpuDescriptorHandle();
 		m_pCommandList->OMSetRenderTargets(numRT, rtDSHandleTbl, FALSE, &dsDS);
 	}
 	else {
-		//深度バッファがない。
+		//深度バッファがない
 		m_pCommandList->OMSetRenderTargets(numRT, rtDSHandleTbl, FALSE, nullptr);
 	}
 
@@ -101,7 +101,7 @@ inline void RenderContext::SetRenderTargetsAndViewport(UINT numRT, RenderTarget*
 
 inline void RenderContext::ClearRenderTargetViews(int numRt, RenderTarget* renderTargets[]) {
 	if (renderTargets[0]->IsExsitDepthStencilBuffer()) {
-		//深度バッファがある。
+		//深度バッファがある
 		ClearDepthStencilView(renderTargets[0]->GetDSVCpuDescriptorHandle(), renderTargets[0]->GetDSVClearValue());
 	}
 	for (int i = 0; i < numRt; i++) {

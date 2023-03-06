@@ -33,7 +33,7 @@ void PipelineState::Init(
 		ELOG("Erorr : Invalid Argument ");
 	}
 
-	auto pDevice =GraphicsEngine::GetInstance()->GetDevice();
+	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
 	
 	std::wstring vsPath;
 	std::wstring psPath;
@@ -72,5 +72,25 @@ void PipelineState::Init(
 	hr = pDevice->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(m_pPipelineState.GetAddressOf()));
 	if (FAILED(hr)){
 		ELOG("Error : ID3D12Device::CreateGraphicsPipelineState() Failed. retcode = 0x%x", hr);
+	}
+}
+
+//=============================================================================
+// 初期化設定から初期化
+//=============================================================================
+void PipelineState::Init(D3D12_GRAPHICS_PIPELINE_STATE_DESC desc){
+	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	auto hr = pDevice->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(m_pPipelineState.GetAddressOf()));
+	if (FAILED(hr)) {
+		MessageBoxA(nullptr, "パイプラインステートの作成に失敗しました。\n", "エラー", MB_OK);
+		std::abort();
+	}
+}
+void PipelineState::Init(D3D12_COMPUTE_PIPELINE_STATE_DESC desc){
+	auto pDevice = GraphicsEngine::GetInstance()->GetDevice();
+	auto hr = pDevice->CreateComputePipelineState(&desc, IID_PPV_ARGS(m_pPipelineState.GetAddressOf()));
+	if (FAILED(hr)) {
+		MessageBoxA(nullptr, "パイプラインステートの作成に失敗しました。\n", "エラー", MB_OK);
+		std::abort();
 	}
 }

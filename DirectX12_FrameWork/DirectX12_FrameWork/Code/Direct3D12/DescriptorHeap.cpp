@@ -52,7 +52,7 @@ void DescriptorHeap::CommitSamplerHeap(){
 	for (auto& ds : m_descriptorHeap) {
 		auto hr = pDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&ds));
 		if (FAILED(hr)) {
-			MessageBox(nullptr, L"DescriptorHeap::Commit ディスクリプタヒープの作成に失敗しました。", L"エラー", MB_OK);
+			MessageBox(nullptr, L"DescriptorHeap::Commit ディスクリプタヒープの作成に失敗しました", L"エラー", MB_OK);
 			std::abort();
 		}
 	}
@@ -61,7 +61,7 @@ void DescriptorHeap::CommitSamplerHeap(){
 		auto cpuHandle = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 		auto gpuHandle = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 		for (int i = 0; i < m_numSamplerDesc; i++) {
-			//サンプラステートをディスクリプタヒープに登録していく。
+			//サンプラステートをディスクリプタヒープに登録していく
 			pDevice->CreateSampler(&m_samplerDescs[i], cpuHandle);
 			cpuHandle.ptr += m_samplerDescriptorSize;
 		}
@@ -93,46 +93,46 @@ void DescriptorHeap::Commit(){
 			std::abort();
 		}
 	}
-	//定数バッファやシェーダーリソースのディスクリプタをヒープに書き込んでいく。
+	//定数バッファやシェーダーリソースのディスクリプタをヒープに書き込んでいく
 	int bufferNo = 0;
 	for (auto& descriptorHeap : m_descriptorHeap) {
 		auto cpuHandle = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 		auto gpuHandle = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 
-		//定数バッファを登録していく。
+		//定数バッファを登録していく
 		for (int i = 0; i < m_numConstantBuffer; i++) {
 			//@todo bug
 			if (m_constantBuffers[i] != nullptr) {
 				m_constantBuffers[i]->RegistConstantBufferView(cpuHandle,bufferNo);
 			}
-			//次に進める。
+			//次に進める
 			cpuHandle.ptr += m_cbrSrvDescriptorSize;
 		}
 
-		//続いてシェーダーリソース。
+		//続いてシェーダーリソース
 		for (int i = 0; i < m_numShaderResource; i++) {
 			if (m_shaderResources[i] != nullptr) {
 				m_shaderResources[i]->RegistShaderResourceView(cpuHandle, bufferNo);
 			}
-			//次に進める。
+			//次に進める
 			cpuHandle.ptr += m_cbrSrvDescriptorSize;
 		}
 
-		//続いてUAV。
+		//続いてUAV
 		for (int i = 0; i < m_numUavResource; i++) {
 			if (m_uavResources[i] != nullptr) {
 				m_uavResources[i]->RegistUnorderAccessView(cpuHandle, bufferNo);
 			}
-			//次に進める。
+			//次に進める
 			cpuHandle.ptr += m_cbrSrvDescriptorSize;
 		}
 
-		//定数バッファのディスクリプタヒープの開始ハンドルを計算。
+		//定数バッファのディスクリプタヒープの開始ハンドルを計算
 		m_cbGpuDescriptorStart[bufferNo] = gpuHandle;
-		//シェーダーリソースのディスクリプタヒープの開始ハンドルを計算。
+		//シェーダーリソースのディスクリプタヒープの開始ハンドルを計算
 		m_srGpuDescriptorStart[bufferNo] = gpuHandle;
 		m_srGpuDescriptorStart[bufferNo].ptr += (UINT64)m_cbrSrvDescriptorSize * m_numConstantBuffer;
-		//UAVリソースのディスクリプタヒープの開始ハンドルを計算。
+		//UAVリソースのディスクリプタヒープの開始ハンドルを計算
 		m_uavGpuDescriptorStart[bufferNo] = gpuHandle;
 		m_uavGpuDescriptorStart[bufferNo].ptr += (UINT64)m_cbrSrvDescriptorSize * (m_numShaderResource + m_numConstantBuffer);
 

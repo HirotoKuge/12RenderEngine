@@ -96,7 +96,6 @@ void GraphicsEngine::WaitDraw(){
 	m_pCommandQueue->Signal(m_pFence, fence);
 	m_fenceValue++;
 
-	// Wait until the previous frame is finished.
 	if (m_pFence->GetCompletedValue() < fence){
 		m_pFence->SetEventOnCompletion(fence, m_fenceEvent);
 		WaitForSingleObject(m_fenceEvent, INFINITE);
@@ -215,11 +214,7 @@ bool GraphicsEngine::Init(HWND hwnd, uint32_t frameBufferWidth, uint32_t frameBu
 	m_camera3D.SetPosition({ 0.0f, 50.0f, 200.0f });
 	m_camera3D.SetTarget({ 0.0f, 50.0f, 0.0f });
 
-	/* 
-	//フォント描画エンジンを初期化
-	m_fontEngine.Init();
 
-	*/
 
 	//DirectXTK用のグラフィックメモリ管理クラスのインスタンスを作成する
 	m_directXTKGfxMemroy = std::make_unique<DirectX::GraphicsMemory>(m_pDevice);

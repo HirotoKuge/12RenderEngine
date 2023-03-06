@@ -62,7 +62,7 @@ public:
 			&m_shaderResources.front(),
 			m_numShaderResource,
 			MAX_SHADER_RESOURCE,
-			L"DescriptorHeap::RegistShaderResource() レジスタ番号が範囲外です。"
+			L"DescriptorHeap::RegistShaderResource() レジスタ番号が範囲外です"
 		);
 	}
 
@@ -81,7 +81,7 @@ public:
 			&m_uavResources.front(),
 			m_numUavResource,
 			MAX_SHADER_RESOURCE,
-			L"DescriptorHeap::RegistUnorderAccessResource() レジスタ番号が範囲外です。"
+			L"DescriptorHeap::RegistUnorderAccessResource() レジスタ番号が範囲外です"
 		);
 	}
 	
@@ -100,7 +100,7 @@ public:
 			&m_constantBuffers.front(),
 			m_numConstantBuffer,
 			MAX_CONSTANT_BUFFER,
-			L"DescriptorHeap::RegistConstantBuffer() レジスタ番号が範囲外です。"
+			L"DescriptorHeap::RegistConstantBuffer() レジスタ番号が範囲外です"
 		);
 	}
 
@@ -119,7 +119,7 @@ public:
 			m_samplerDescs,
 			m_numSamplerDesc,
 			MAX_SAMPLER_STATE,
-			L"DescriptorHeap::RegistSamplerDesc() レジスタ番号が範囲外です。"
+			L"DescriptorHeap::RegistSamplerDesc() レジスタ番号が範囲外です"
 		);
 	}
 	

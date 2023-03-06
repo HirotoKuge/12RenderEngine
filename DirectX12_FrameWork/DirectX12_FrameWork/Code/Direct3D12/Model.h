@@ -73,7 +73,7 @@ public:
 	/*****************************************************************//**
 	 * \brief デストラクタ
 	 *********************************************************************/
-	~Model();
+	~Model(){};
 
 
 	/*****************************************************************//**
@@ -83,70 +83,77 @@ public:
 	 *********************************************************************/
 	void Init( const ModelInitData& initData );
 	
-	/// <summary>
-	/// ワールド行列を計算して、メンバ変数のm_worldMatrixをこぅしんする。
-	/// </summary>
-	/// <param name="pos">座標</param>
-	/// <param name="rot">回転</param>
-	/// <param name="scale">拡大率</param>
+	
+	/*****************************************************************//**
+	 * \brief ワールド変換行列を更新
+	 * 
+	 * \param pos	座標
+	 * \param rot	回転
+	 * \param scale	サイズ
+	 *********************************************************************/
 	void UpdateWorldMatrix(Vector3 pos, Quaternion rot, Vector3 scale);
 
-	/// <summary>
-	/// 描画
-	/// </summary>
-	/// <param name="renderContext">レンダリングコンテキスト</param>
+	/*****************************************************************//**
+	 * \brief 描画
+	 * 
+	 * \param renderContext レンダリングコンテキスト
+	 *********************************************************************/
 	void Draw(RenderContext& renderContext);
 	
-	/// <summary>
-	/// 描画(カメラ指定版)
-	/// </summary>
-	/// <param name="renderContext">レンダリングコンテキスト</param>
-	/// <param name="camera">カメラ</param>
+	
+	/*****************************************************************//**
+	 * \brief カメラ指定描画
+	 * 
+	 * \param renderContext レンダリングコンテキスト
+	 * \param camera		カメラ
+	 *********************************************************************/
 	void Draw(RenderContext& renderContext, Camera& camera);
-	/// <summary>
-	/// 描画(カメラ行列指定版)
-	/// </summary>
-	/// <param name="renderContext">レンダリングコンテキスト</param>
-	/// <param name="viewMatrix">ビュー行列</param>
-	/// <param name="projMatrix">プロジェクション行列</param>
+	
+	/*****************************************************************//**
+	 * \brief カメラ行列指定描画
+	 * 
+	 * \param renderContext	レンダリングコンテキスト
+	 * \param viewMatrix	ビュー変換行列
+	 * \param projMatrix	プロジェクション変換行列
+	 *********************************************************************/
 	void Draw(RenderContext& renderContext, const Matrix& viewMatrix, const Matrix& projMatrix);
-	/// <summary>
-	/// インスタンシング描画
-	/// </summary>
-	/// <param name="renderContext">レンダリングコンテキスト</param>
-	/// <param name="numInstance">インスタンスの数</param>
+	
+	/*****************************************************************//**
+	 * \brief インスタンシング描画
+	 * 
+	 * \param renderContext	レンダリングコンテキスト
+	 * \param numInstance	インスタンス数
+	 *********************************************************************/
 	void DrawInstancing(RenderContext& renderContext, int numInstance);
-	/// <summary>
-	/// ワールド行列を取得。
-	/// </summary>
-	/// <returns></returns>
-	const Matrix& GetWorldMatrix() const
-	{
+	
+	/*****************************************************************//**
+	 * \brief ワールド変換行列を取得
+	 * 
+	 * \return ワールド変換行列
+	 *********************************************************************/
+	const Matrix& GetWorldMatrix() const{
 		return m_worldMtx;
 	}
 	
-
-	/// <summary>
-	/// 初期化されているか判定。
-	/// </summary>
-	/// <returns></returns>
-	bool IsInited() const
-	{
+	/*****************************************************************//**
+	 * \brief 初期化されているかを確認
+	 * 
+	 * \return 初期化されてるか
+	 *********************************************************************/
+	bool IsInited() const{
 		return m_isInited;
 	}
-	/// <summary>
-	/// ワールド行列を計算する。
-	/// </summary>
-	/// <remark>
-	/// この関数はUpdateWorldMatrix関数の中から使われています。
-	/// Modelクラスの使用に沿ったワールド行列の計算を行いたい場合、
-	/// 本関数を利用すると計算することができます。
-	/// </remark>
-	/// <param name="pos">座標</param>
-	/// <param name="rot">回転</param>
-	/// <param name="scale">拡大率。</param>
-	/// <returns></returns>
-	Matrix CalcWorldMatrix(Vector3 pos, Quaternion rot, Vector3 scale){
+	
+	/*****************************************************************//**
+	 * \brief ワールド変換行列を計算
+	 * 
+	 * \param pos	  座標
+	 * \param rot	  回転
+	 * \param scale	  サイズ
+	 * \return 計算結果
+	 *********************************************************************/
+	
+Matrix CalcWorldMatrix(Vector3 pos, Quaternion rot, Vector3 scale){
 		Matrix worldMtx;
 	
 		Matrix transMtx, rotMtx,scaleMtx;
@@ -166,9 +173,11 @@ private:
 	//-----------------------------------------------------------------------------
 	//!{
 	
-	bool m_isInited = false; // 初期化されている
+	bool m_isInited = false; // 初期化されているかどうか
 	Matrix m_worldMtx;		 // ワールド行列
-	Mesh m_meshParts;		 // メッシュパーツ。
+	Mesh m_meshParts;		 // メッシュパーツ
+
+	//TODO:今後ボーン情報とか追加できるといいね
 	
 	//!}
 	//-----------------------------------------------------------------------------

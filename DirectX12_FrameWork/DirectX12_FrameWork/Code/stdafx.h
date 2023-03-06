@@ -71,6 +71,7 @@ using namespace Microsoft::WRL;
 #include "Direct3D12/DescriptorHeap.h"
 #include "Direct3D12/RenderTarget.h"
 #include "Direct3D12/SharedStruct.h"
+#include "Direct3D12/Shader.h"
 
 #include "Direct3D12/RenderContext_inline.h"
 #include "Direct3D12/DescriptorHeap_inline.h"

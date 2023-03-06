@@ -47,7 +47,7 @@ void Model::UpdateWorldMatrix(Vector3 pos, Quaternion rot, Vector3 scale){
 //=============================================================================
 void Model::Draw(RenderContext& rc){
 	//3Dカメラ取得
-	auto pCamara3D =GraphicsEngine::GetInstance()->GetCamera3D();
+	auto pCamara3D = GraphicsEngine::GetInstance()->GetCamera3D();
 	
 	m_meshParts.Draw(
 		rc,
@@ -75,7 +75,7 @@ void Model::DrawInstancing(RenderContext& rc, int numInstance){
 	//3Dカメラ取得
 	auto pCamara3D =GraphicsEngine::GetInstance()->GetCamera3D();
 
-	// インスタンスの数が0以上なら描画。
+	// インスタンスの数が0以上なら描画
 	m_meshParts.DrawInstancing(
 		rc,
 		numInstance,

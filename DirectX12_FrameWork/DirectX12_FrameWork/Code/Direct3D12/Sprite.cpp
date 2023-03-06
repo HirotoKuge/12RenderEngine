@@ -27,7 +27,9 @@ const Vector2 Sprite::DEFAULT_PIVOT = { 0.5f, 0.5f };
 //=============================================================================
 // デストラクタ
 //=============================================================================
-Sprite::~Sprite(){}
+Sprite::~Sprite(){
+	
+}
 
 //=============================================================================
 // 初期化処理
@@ -59,6 +61,35 @@ void Sprite::Init(const SpriteInitData& initData){
 
 	// ディスクリプタヒープを初期化
 	InitDescriptorHeap(initData);
+}
+
+//=============================================================================
+// 更新処理
+//=============================================================================
+void Sprite::Update(const Vector3& pos, const Quaternion& rot, const Vector3& scale, const Vector2& pivot){
+	//ピボットを考慮に入れた平行移動行列を作成
+	//ピボットは真ん中が0.0, 0.0、左上が-1.0f, -1.0、右下が1.0、1.0になるようにする
+	Vector2 localPivot = pivot;
+	localPivot.x -= 0.5f;
+	localPivot.y -= 0.5f;
+	localPivot.x *= -2.0f;
+	localPivot.y *= -2.0f;
+	//画像のハーフサイズを求める
+	Vector2 halfSize = m_size;
+	halfSize.x *= 0.5f;
+	halfSize.y *= 0.5f;
+	Matrix mPivotTrans;
+
+	mPivotTrans.MakeTranslation(
+		{ halfSize.x * localPivot.x, halfSize.y * localPivot.y, 0.0f }
+	);
+	Matrix mTrans, mRot, mScale;
+	mTrans.MakeTranslation(pos);
+	mRot.MakeRotationFromQuaternion(rot);
+	mScale.MakeScaling(scale);
+	m_worldMtx = mPivotTrans * mScale;
+	m_worldMtx = m_worldMtx * mRot;
+	m_worldMtx = m_worldMtx * mTrans;
 }
 
 //============================================================================
@@ -252,19 +283,20 @@ void Sprite::InitPipelineState(const SpriteInitData& initData) {
 	// パイプラインステートオブジェクトの生成
 	// TODO:シェーダーの扱い方を考える
 	// クラスのが扱いやすそうだなとは思う
+	// 後はシェーダーファイルもなんか使いやすいのにしたい
 #ifdef _DEBUG
 	m_pipelineState.Init(
 		desc,
-		L"../x64/Debug/DefferdSpritePSVS.cso",
-		L"../x64/Debug/DefferdSpritePSPS.cso",
+		L"Assets/Shader/DefferdSpriteVS.cso",
+		L"Assets/Shader/DefferdSpritePS.cso",
 		m_rootSignature.Get());
 
 #else
 	m_pPipelineState.Init(
 		pDevice,
 		desc,
-		L"DefferdSpritePS.cso",
-		L"DefferdSpritePS.cso",
+		L"Assets/Shader/DefferdSpritePS.cso",
+		L"Assets/Shader/DefferdSpritePS.cso",
 		m_pRootSignature->Get());
 
 #endif // _DEBUG
@@ -278,11 +310,11 @@ void Sprite::InitConstantBuffer(const SpriteInitData& initData) {
 	//定数バッファの初期化
 	m_constantBufferGPU.Init(sizeof(m_constantBufferCPU), nullptr);
 	//ユーザー拡張の定数バッファが指定されている
-	if (initData.expandConstantBuffer != nullptr) {
-		m_userExpandConstantBufferCPU = initData.expandConstantBuffer;
+	if (initData.pExpandConstantBuffer != nullptr) {
+		m_userExpandConstantBufferCPU = initData.pExpandConstantBuffer;
 		m_userExpandConstantBufferGPU.Init(
 			initData.expandConstantBufferSize,
-			initData.expandConstantBuffer
+			initData.pExpandConstantBuffer
 		);
 	}
 }

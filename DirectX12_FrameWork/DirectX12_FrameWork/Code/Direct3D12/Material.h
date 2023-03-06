@@ -186,19 +186,14 @@ private:
 	// private variables.
 	//-----------------------------------------------------------------------------
 	//!{
+	std::array<Texture*,TEXTURE_USAGE_PBR::MAX> m_pTexturesPBR;	// テクスチャ
 	
-	RootSignature m_rootSignature;		// ルートシグネチャ
-	PipelineState m_pipelineState;		// パイプラインステート
 	ConstantBuffer m_constantBuffer;	// 定数バッファ
 	ConstantBuffer m_materialCB;		// 定数バッファ
-	std::array<Texture*,TEXTURE_USAGE_PBR::MAX> m_pTexturesPBR;	// テクスチャ
-
-	//拡張SRVが設定されるレジスタの開始番号
-	const int EXPAND_SRV_REG__START_NO = 10;
-	//１つのマテリアルで使用されるSRVの数
-	const int NUM_SRV_ONE_MATERIAL = EXPAND_SRV_REG__START_NO + MAX_MODEL_EXPAND_SRV;
-	//１つのマテリアルで使用されるCBVの数
-	const int NUM_CBV_ONE_MATERIAL = 2;
+	RootSignature m_rootSignature;		// ルートシグネチャ
+	PipelineState m_pipelineState;		// パイプラインステート
+	Shader* m_pVSShader;
+	Shader* m_pPSShader;
 
 	uint32_t m_numSr; // シェーダーリソースの数(テクスチャ枚数)
 	uint32_t m_numCb; // 定数バッファの数
@@ -208,6 +203,27 @@ private:
 	// private methods.
 	//-----------------------------------------------------------------------------
 	
+	/*****************************************************************//**
+	 * \brief パイプラインステートの初期化
+	 * 
+	 * \param colorBufferFormats カラーターゲットのフォーマットの配列
+	 *********************************************************************/
+	void InitPipelineState(const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormats);
+
+	/*****************************************************************//**
+	 * \brief シェーダーの初期化
+	 * 
+	 * \param pVSShaderPath
+	 * \param pPSShaderPath
+	 *********************************************************************/
+	void InitShader(const wchar_t* pVSShaderPath, const wchar_t* pPSShaderPath);
+	void InitShaders(
+		const char* fxFilePath,
+		const char* vsEntryPointFunc,
+		const char* vsSkinEntriyPointFunc,
+		const char* psEntryPointFunc);
+
+
 	/*****************************************************************//**
 	 * \brief テクスチャの初期化
 	 *  

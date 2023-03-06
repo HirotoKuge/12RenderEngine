@@ -5,13 +5,11 @@
  * \author Hiroto Kuge
  * \date   December 2022
  *********************************************************************/
-
-
 #pragma once
-#include <DirectXMath.h>
-#include "Vector.h"
 
-
+//=============================================================================
+// 行列クラス
+//=============================================================================
 class Matrix {
 public:
 
@@ -29,20 +27,21 @@ public:
 	//単位行列
 	static const Matrix Identity;
 public:
-	/// <summary>
-	/// DirectX::XMMATRIX型への暗黙の型変換。
-	/// </summary>
-	/// <returns></returns>
-	operator DirectX::XMMATRIX() const
-	{
+
+	/*****************************************************************//**
+	 * \brief DirectX::XMMATRIX型への暗黙の型変換
+	 *
+	 * \return 変換結果
+	 *********************************************************************/
+	operator DirectX::XMMATRIX() const {
 		return DirectX::XMLoadFloat4x4(&mat);
 	}
-	/// <summary>
-	/// コンストラクタ。
-	/// </summary>
-	/// <remarks>
-	/// 単位行列として初期化されます。
-	/// </remarks>
+
+	/*****************************************************************//**
+	 * \brief コンストラクタ
+	 *
+	 * \memo 単位行列として初期化
+	 *********************************************************************/
 	Matrix() {
 		mat._11 = 1.0f;
 		mat._12 = 0.0f;
@@ -75,51 +74,56 @@ public:
 	{
 
 	}
-	/// <summary>
-	/// コンストラクタ
-	/// </summary>
-	/// <param name="m"></param>
+
+	/*****************************************************************//**
+	 * \brief コンストラクタ
+	 * \param m コピー元
+	 *********************************************************************/
 	Matrix(const DirectX::XMFLOAT4X4& m)
 	{
 		mat = m;
 	}
-	/// <summary>
-	/// 代入演算子。
-	/// </summary>
-	/// <param name="_m"></param>
-	/// <returns></returns>
-	Matrix& operator=(const Matrix& _m)
-	{
+	
+	/*****************************************************************//**
+	 * \brief 代入演算子
+	 * \param _m 
+	 * \return 
+	 *********************************************************************/
+	Matrix& operator=(const Matrix& _m){
 		mat = _m.mat;
 		return *this;
 	}
-	/// <summary>
-	/// ベクトルと3x3行列を乗算。
-	/// </summary>
-	/// <param name="vOut">乗算されるベクトル。</param>
-	void Apply3x3(Vector3& vOut) const
-	{
+	
+	/*****************************************************************//**
+	 * \brief ベクトルと3x3行列を乗算
+	 * 
+	 * \param vOut 乗算されるベクトル
+	 *********************************************************************/
+	void Apply3x3(Vector3& vOut) const{
 		Vector3 vTmp = vOut;
 		vOut.x = vTmp.x * m[0][0] + vTmp.y * m[1][0] + vTmp.z * m[2][0];
 		vOut.y = vTmp.x * m[0][1] + vTmp.y * m[1][1] + vTmp.z * m[2][1];
 		vOut.z = vTmp.x * m[0][2] + vTmp.y * m[1][2] + vTmp.z * m[2][2];
 	}
 
-	/// <summary>
-	/// ベクトルに行列を乗算。
-	/// </summary>
-	/// <param name="vOut">乗算されるベクトル。</param>
-	void Apply(Vector3& vOut) const
-	{
+	
+	/*****************************************************************//**
+	 * \brief ベクトルに行列を乗算
+	 *
+	 * \param vOut 乗算されるベクトル
+	 *********************************************************************/
+	void Apply(Vector3& vOut) const{
 		DirectX::XMStoreFloat3(
 			&vOut.vec,
 			DirectX::XMVector3Transform(vOut, *this)
 		);
 	}
-	/// <summary>
-	/// ベクトルに行列を乗算。
-	/// </summary>
-	/// <param name="vOut">乗算されるベクトル。</param>
+
+	/*****************************************************************//**
+	 * \brief ベクトルに行列を乗算
+	 *
+	 * \param vOut 乗算されるベクトル
+	 *********************************************************************/
 	void Apply(Vector4& vOut) const
 	{
 		DirectX::XMStoreFloat4(
@@ -127,36 +131,39 @@ public:
 			DirectX::XMVector4Transform(vOut, *this)
 		);
 	}
-	/// <summary>
-	/// 平行移動行列を作成。
-	/// </summary>
-	/// <param name="trans">平行移動。</param>
-	void MakeTranslation(const Vector3& trans)
-	{
+	
+	/*****************************************************************//**
+	 * \brief 平行移動行列を作成
+	 *
+	 * \param trans 移動量
+	 *********************************************************************/
+	void MakeTranslation(const Vector3& trans){
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixTranslationFromVector(trans)
 		);
 	}
-	void MakeTranslation(float x, float y, float z)
-	{
+	void MakeTranslation(float x, float y, float z){
 		MakeTranslation(Vector3(x, y, z));
 	}
-	/// <summary>
-	/// Y軸周りの回転行列を作成。
-	/// </summary>
-	/// <param name="angle">回転角度(単位：ラジアン)</param>
-	void MakeRotationY(float angle)
-	{
+	
+	/*****************************************************************//**
+	 * \brief Y軸周りの回転行列を作成
+	 * 
+	 * \param angle 角度(radian)
+	 *********************************************************************/
+	void MakeRotationY(float angle){
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixRotationY(angle)
 		);
 	}
-	/// <summary>
-	/// Z軸周りの回転行列を作成。
-	/// </summary>
-	/// <param name="angle">回転角度(単位：ラジアン)</param>
+
+	/*****************************************************************//**
+	 * \brief Z軸周りの回転行列を作成
+	 *
+	 * \param angle 角度(radian)
+	 *********************************************************************/
 	void MakeRotationZ(float angle)
 	{
 		DirectX::XMStoreFloat4x4(
@@ -165,7 +172,7 @@ public:
 		);
 	}
 	/// <summary>
-	/// X軸周りの回転行列を作成。
+	/// X軸周りの回転行列を作成
 	/// </summary>
 	/// <param name="angle">回転角度(単位：ラジアン)</param>
 	void MakeRotationX(float angle)
@@ -176,9 +183,9 @@ public:
 		);
 	}
 	/// <summary>
-	/// クォータニオンから回転行列を作成。
+	/// クォータニオンから回転行列を作成
 	/// </summary>
-	/// <param name="q">クォータニオン。</param>
+	/// <param name="q">クォータニオン</param>
 	void MakeRotationFromQuaternion(const Quaternion& q)
 	{
 		DirectX::XMStoreFloat4x4(
@@ -188,10 +195,10 @@ public:
 	}
 
 	/// <summary>
-	/// 任意の軸周りの回転行列を作成。
+	/// 任意の軸周りの回転行列を作成
 	/// </summary>
-	/// <param name="axis">回転軸。</param>
-	/// <param name="angle">回転角度。</param>
+	/// <param name="axis">回転軸</param>
+	/// <param name="angle">回転角度</param>
 	void MakeRotationAxis(const Vector3& axis, float angle)
 	{
 		DirectX::XMStoreFloat4x4(
@@ -200,9 +207,9 @@ public:
 		);
 	}
 	/// <summary>
-	/// 拡大行列を作成。
+	/// 拡大行列を作成
 	/// </summary>
-	/// <param name="scale">拡大率。</param>
+	/// <param name="scale">拡大率</param>
 	void MakeScaling(const Vector3& scale)
 	{
 		DirectX::XMStoreFloat4x4(
@@ -211,12 +218,12 @@ public:
 		);
 	}
 	/// <summary>
-	/// 透視変換行列を作成。
+	/// 透視変換行列を作成
 	/// </summary>
 	/// <param name="viewAngle">画角(単位：ラジアン)</param>
 	/// <param name="aspect">アスペクト比</param>
-	/// <param name="fNear">近平面。</param>
-	/// <param name="fFar">遠平面。</param>
+	/// <param name="fNear">近平面</param>
+	/// <param name="fFar">遠平面</param>
 	void MakeProjectionMatrix(
 		float viewAngle,
 		float aspect,
@@ -230,12 +237,12 @@ public:
 		);
 	}
 	/// <summary>
-	/// 平行投影行列を作成。
+	/// 平行投影行列を作成
 	/// </summary>
-	/// <param name="w">ビューボリュームの幅。</param>
-	/// <param name="h">ビューボリュームの高さ。</param>
-	/// <param name="fNear">近平面。</param>
-	/// <param name="fFar">遠平面。</param>
+	/// <param name="w">ビューボリュームの幅</param>
+	/// <param name="h">ビューボリュームの高さ</param>
+	/// <param name="fNear">近平面</param>
+	/// <param name="fFar">遠平面</param>
 	void MakeOrthoProjectionMatrix(float w, float h, float fNear, float fFar)
 	{
 		DirectX::XMStoreFloat4x4(
@@ -244,7 +251,7 @@ public:
 		);
 	}
 	/// <summary>
-	/// カメラ行列を作成。
+	/// カメラ行列を作成
 	/// </summary>
 	/// <param name="position">視点</param>
 	/// <param name="target">注視点</param>
@@ -285,9 +292,9 @@ public:
 		return *this;
 	}
 	/// <summary>
-	/// 逆行列を計算。
+	/// 逆行列を計算
 	/// </summary>
-	/// <param name="_m">元になる行列。</param>
+	/// <param name="_m">元になる行列</param>
 	void Inverse(const Matrix& _m)
 	{
 		DirectX::XMStoreFloat4x4(
@@ -296,14 +303,14 @@ public:
 		);
 	}
 	/// <summary>
-	/// 自身の逆行列を計算。
+	/// 自身の逆行列を計算
 	/// </summary>
 	void Inverse()
 	{
 		Inverse(*this);
 	}
 	/// <summary>
-	/// 転置行列を計算。
+	/// 転置行列を計算
 	/// </summary>
 	void Transpose()
 	{
@@ -314,21 +321,20 @@ public:
 	}
 
 };
-/// <summary>
-/// 行列同士の乗算
-/// </summary>
-/// <remarks>
-/// 乗算は左から右に向かってかかっていく。
-/// </remarks>
-static inline Matrix operator*(const Matrix& m1, const Matrix m2)
-{
+
+/*****************************************************************//**
+ * \brief 乗算
+ * \param m1
+ * \param m2
+ * \return 
+ *********************************************************************/
+static inline Matrix operator*(const Matrix& m1, const Matrix m2){
 	Matrix mRet;
 	mRet.Multiply(m1, m2);
 	return mRet;
 }
-/// <summary>
-/// 単位行列
-/// </summary>
+
+// 単位行列
 const Matrix g_matIdentity = {
 		1.0f, 0.0f, 0.0f, 0.0f ,
 		0.0f, 1.0f, 0.0f, 0.0f ,

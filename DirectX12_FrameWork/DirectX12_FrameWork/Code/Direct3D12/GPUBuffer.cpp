@@ -47,7 +47,7 @@ void GPUBuffer::RegistUnorderAccessView(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, i
 		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
 	}
 	else {
-		//–¢‘Î‰B
+		//–¢‘Î‰
 		std::abort();
 	}
 
