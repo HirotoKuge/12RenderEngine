@@ -74,13 +74,6 @@ public:
 	void RegistConstantBufferView(D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle, int bufferNo);
 
 	/*****************************************************************//**
-	 * \brief VRAM(GPU側のメモリ)上の仮想アドレスを取得
-	 *  
-	 * \return VRAM(GPU側のメモリ)上の仮想アドレス
-	 *********************************************************************/
-	D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress();
-
-	/*****************************************************************//**
 	 * \brief	メモリマッピング済のポインタを取得
 	 * 
 	 * \return	メモリマッピング済のポインタ 
@@ -103,6 +96,14 @@ public:
 	void CopyToVRAM(T& data){
 		CopyToVRAM(&data);
 	}
+	
+	/*****************************************************************//**
+	 * \brief VRAM(GPU側のメモリ)上の仮想アドレスを取得
+	 *  
+	 * \return VRAM(GPU側のメモリ)上の仮想アドレス
+	 *********************************************************************/
+	D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress();
+
 	//!}
 private:
 	//-----------------------------------------------------------------------------
@@ -110,7 +111,7 @@ private:
 	//-----------------------------------------------------------------------------
 	//!{
 	 
-	ComPtr<ID3D12Resource> m_pConstantBuffer[2] = { nullptr };	// 定数バッファ本体
+	ID3D12Resource* m_pConstantBuffer[2] = { nullptr };	// 定数バッファ本体
 	void* m_pConstBufferCPU[2] = { nullptr };					// CPU側からアクセスできる定数バッファのアドレス
 	size_t m_size = 0;											// 定数バッファのサイズ(コピー時はこっちを使う)
 	uint32_t m_allocSize = 0;									// アライメント済み割り当てサイズ

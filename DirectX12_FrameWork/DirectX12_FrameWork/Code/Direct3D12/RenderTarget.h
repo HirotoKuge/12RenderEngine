@@ -133,10 +133,11 @@ private:
 	
 	Texture m_rtTexture;
 
-	ComPtr<ID3D12Resource>		 m_pRTTextureDx12;	// レンダリングターゲットとなるテクスチャ
-	ComPtr<ID3D12Resource>		 m_pDSTexture;		// 深度ステンシルバッファとなるテクスチャ
-	ComPtr<ID3D12DescriptorHeap> m_pRTVHeap;
-	ComPtr<ID3D12DescriptorHeap> m_pDSVHeap;
+	ID3D12Resource*			m_pRTTextureDx12 = nullptr;	// レンダリングターゲットとなるテクスチャ
+	ID3D12Resource*			m_pDSTexture	 = nullptr;		// 深度ステンシルバッファとなるテクスチャ
+	
+	ID3D12DescriptorHeap*	m_pRTVHeap = nullptr;
+	ID3D12DescriptorHeap*	m_pDSVHeap = nullptr;
 	
 	uint32_t m_rtvDescriptorSize = 0; //フレームバッファのディスクリプタのサイズ
 	uint32_t m_dsvDescriptorSize = 0; //深度ステンシルバッファのディスクリプタのサイズ

@@ -259,9 +259,9 @@ public:
 	}
 	
 	/*****************************************************************//**
-	 * \brief ベクトルの玄さん
+	 * \brief ベクトルの減算
 	 * 
-	 * \param _v 減産されるベクトル
+	 * \param _v 減算されるベクトル
 	 *********************************************************************/
 	void Subtract(const Vector3& _v){
 		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat3(&vec);
@@ -270,29 +270,26 @@ public:
 		DirectX::XMStoreFloat3(&vec, xmvr);
 	}
 	
-	/// /// <summary>
-	/// ベクトルの減算
-	/// </summary>
-	/// <remarks>
-	/// this = v0 - v1;
-	/// </remarks>
-	void Subtract(const Vector3& v0, const Vector3& v1)
-	{
+	/*****************************************************************//**
+	 * \brief ベクトルの減算
+	 * \param v0 引かれるベクトル
+	 * \param v1 引くベクトル
+	 *********************************************************************/
+	void Subtract(const Vector3& v0, const Vector3& v1){
 		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat3(&v0.vec);
 		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat3(&v1.vec);
 		DirectX::XMVECTOR xmvr = DirectX::XMVectorSubtract(xmv0, xmv1);
 		DirectX::XMStoreFloat3(&vec, xmvr);
 	}
 
-	/// <summary>
-	/// 内積を計算
-	/// </summary>
-	/// <remarks>
-	/// float d = this->x * _v.x + this->y * _v.y + this->z * _v.z;
-	/// return d;
-	/// </remarks>
-	float Dot(const Vector3& _v) const
-	{
+	
+	/*****************************************************************//**
+	 * \brief 内積を計算
+	 * 
+	 * \param _v
+	 * \return 
+	 *********************************************************************/
+	float Dot(const Vector3& _v) const{
 		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat3(&vec);
 		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat3(&_v.vec);
 		return DirectX::XMVector3Dot(xmv0, xmv1).m128_f32[0];
@@ -308,8 +305,13 @@ public:
 	/// v.z = this->x * _v.y - this->y * _v.x;
 	/// this = v;
 	/// </remarks>
-	void Cross(const Vector3& _v)
-	{
+	
+	/*****************************************************************//**
+	 * \brief 外積を計算
+	 * 
+	 * \param _v
+	 *********************************************************************/
+	void Cross(const Vector3& _v){
 		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat3(&vec);
 		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat3(&_v.vec);
 		DirectX::XMVECTOR xmvr = DirectX::XMVector3Cross(xmv0, xmv1);
@@ -323,76 +325,68 @@ public:
 	/// this->y = v0.z * v1.x - v0.x * v1.z;
 	/// this->z = v0.x * v1.y - v0.y * v1.x; 
 	/// </remarks>
-	void Cross(const Vector3& v0, const Vector3& v1)
-	{
+	
+	/*****************************************************************//**
+	 * \brief 外積を計算
+	 * 
+	 * \param v0
+	 * \param v1
+	 *********************************************************************/
+	void Cross(const Vector3& v0, const Vector3& v1){
 		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat3(&v0.vec);
 		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat3(&v1.vec);
 		DirectX::XMVECTOR xmvr = DirectX::XMVector3Cross(xmv0, xmv1);
 		DirectX::XMStoreFloat3(&vec, xmvr);
 	}
-	/// <summary>
-	/// ベクトルの長さを取得
-	/// </summary>
-	float Length() const
-	{
+	
+	/*****************************************************************//**
+	 * \brief ベクトルの長さを取得
+	 * 
+	 * \return 
+	 *********************************************************************/
+	float Length() const{
 		DirectX::XMVECTOR xmv = DirectX::XMLoadFloat3(&vec);
 		return DirectX::XMVector3Length(xmv).m128_f32[0];
 	}
-	/// <summary>
-	/// ベクトルの長さの二乗を取得
-	/// </summary>
-	float LengthSq() const
-	{
+	
+	/*****************************************************************//**
+	 * \brief ベクトルの長さの２乗を取得
+	 * \return 
+	 *********************************************************************/
+	float LengthSq() const{
 		DirectX::XMVECTOR xmv = DirectX::XMLoadFloat3(&vec);
 		return DirectX::XMVector3LengthSq(xmv).m128_f32[0];
 	}
 
-	/// <summary>
-	/// ベクトルをスカラーで拡大
-	/// </summary>
-	/// <remarks>
-	/// 下記のような処理が行われています
-	/// this->x *= s;
-	/// this->y *= s;
-	/// this->z *= s;
-	/// </remarks>
-	void Scale(float s)
-	{
+
+	/*****************************************************************//**
+	 * \brief ベクトルをスカラーで拡大
+	 * 
+	 * \param s
+	 * \memo sを各要素にかけてる
+	 *********************************************************************/
+	void Scale(float s){
 		DirectX::XMVECTOR xmv = DirectX::XMLoadFloat3(&vec);
 		xmv = DirectX::XMVectorScale(xmv, s);
 		DirectX::XMStoreFloat3(&vec, xmv);
 	}
 
-	/// <summary>
-	/// ベクトルを正規化
-	/// </summary>
-	/// <remarks>
-	///		下記のような処理が行われています
-	///		//ベクトルの大きさを求める
-	///		float len = this->x * this->x + this->y * this->y + this->z * this->z;
-	///		len = sqrt(len);
-	///		//ベクトルの大きさで、各要素を除算する
-	///		this->x /= len;
-	///		this->y /= len;
-	///		this->z /= len;
-	/// </remarks>
-	void Normalize()
-	{
+	/*****************************************************************//**
+	 * \brief ベクトルを正規化
+	 *********************************************************************/
+	void Normalize(){
 		DirectX::XMVECTOR xmv = DirectX::XMLoadFloat3(&vec);
 		xmv = DirectX::XMVector3Normalize(xmv);
 		DirectX::XMStoreFloat3(&vec, xmv);
 	}
-	/// <summary>
-	/// ベクトルをスカラーで除算
-	/// </summary>
-	/// <remarks>
-	///		下記のような処理が行われています
-	///		this->x /= d;
-	///		this->y /= d;
-	///		this->z /= d;
-	/// </remarks>
-	void Div(float d)
-	{
+
+	/*****************************************************************//**
+	 * \brief ベクトルをスカラーで除算
+	 * 
+	 * \param d
+	 * \memo dで各要素を割ってる
+	 *********************************************************************/
+	void Div(float d){
 		float scale = 1.0f / d;
 		Scale(scale);
 	}
@@ -406,8 +400,12 @@ public:
 	/// this->y = max( this->y, v.y );
 	/// this->z = max( this->z, v.z );
 	/// </remarks>
-	void Max(const Vector3& v)
-	{
+	
+	/*****************************************************************//**
+	 * \brief 最大値を設定
+	 * \param v
+	 *********************************************************************/
+	void Max(const Vector3& v){
 		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat3(&vec);
 		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat3(&v.vec);
 		DirectX::XMStoreFloat3(&vec, DirectX::XMVectorMax(xmv0, xmv1));
@@ -974,67 +972,82 @@ static inline Vector3 operator-(const Vector3& v0, const Vector3& v1)
 /// <summary>
 /// 外積を計算
 /// </summary>
-static inline Vector3 Cross(const Vector3& v0, const Vector3& v1)
-{
+static inline Vector3 Cross(const Vector3& v0, const Vector3& v1){
 	Vector3 result;
 	result.Cross(v0, v1);
 	return result;
 }
-/// <summary>
-/// 内積を計算
-/// </summary>
-static inline float Dot(const Vector3& v0, const Vector3& v1)
-{
+
+/*****************************************************************//**
+ * \brief 内積を計算
+ * 
+ * \param v0
+ * \param v1
+ * \return 
+ *********************************************************************/
+static inline float Dot(const Vector3& v0, const Vector3& v1){
 	return v0.Dot(v1);
 }
 
-/// <summary>
-/// ベクトル同士の加算
-/// </summary>
-
-static inline Vector4 operator+(const Vector4& v0, const Vector4& v1)
-{
+/*****************************************************************//**
+ * \brief ベクトル同士の加算
+ * 
+ * \param v0
+ * \param v1
+ * \return 
+ *********************************************************************/
+static inline Vector4 operator+(const Vector4& v0, const Vector4& v1){
 	Vector4 result;
 	result.Add(v0, v1);
 	return result;
 }
-/// <summary>
-/// ベクトルとスカラーの乗算
-/// </summary>
 
-static inline Vector4 operator*(const Vector4& v, float s)
-{
+/*****************************************************************//**
+ * \brief ベクトルとスカラーの乗算
+ * 
+ * \param v
+ * \param s
+ * \return 
+ *********************************************************************/
+static inline Vector4 operator*(const Vector4& v, float s){
 	Vector4 result;
 	result = v;
 	result.Scale(s);
 	return result;
 }
 
-/// <summary>
-/// ベクトル同士の減算
-/// </summary>
-static inline Vector4 operator-(const Vector4& v0, const Vector4& v1)
-{
+/*****************************************************************//**
+ * \brief ベクトル同士の減算
+ * 
+ * \param v0
+ * \param v1
+ * \return 
+ *********************************************************************/
+static inline Vector4 operator-(const Vector4& v0, const Vector4& v1){
 	Vector4 result;
 	result.Subtract(v0, v1);
 	return result;
 }
 
-
-/// <summary>
-/// 内積を計算
-/// </summary>
-static inline float Dot(const Vector4& v0, const Vector4& v1)
-{
+/*****************************************************************//**
+ * \brief 内積を計算
+ * 
+ * \param v0
+ * \param v1
+ * \return 
+ *********************************************************************/
+static inline float Dot(const Vector4& v0, const Vector4& v1){
 	return v0.Dot(v1);
 }
 
-
-/// <summary>
-/// クォータニオン同士の乗算
-/// </summary>
-static inline Quaternion operator*(const Quaternion& q1, const Quaternion q2)
-{
+/*****************************************************************//**
+ * \brief クォータニオン同士の乗算
+ * 
+ * \param q1
+ * \param q2
+ * \return 
+ *********************************************************************/
+static inline Quaternion operator*(const Quaternion& q1, const Quaternion q2){
 	Quaternion qRet;
 	qRet.Multiply(q2, q1);
 	return qRet;

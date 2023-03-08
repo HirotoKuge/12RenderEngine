@@ -11,6 +11,8 @@
 //=============================================================================
 #include "../stdafx.h"
 #include "App.h"
+#include "../Direct3D12/TrianglePolygon.h"
+
 
 //-----------------------------------------------------------------------------
 // スタティック　メンバー
@@ -44,17 +46,9 @@ struct DirectionalLight
 	float specPow;      // スペキュラの絞り
 };
 
-
-// 頂点構造体
-struct SimpleVertex
-{
-	float pos[3];       // 頂点座標
-	float color[3];     // 頂点カラー
-};
-
 // 関数宣言
 void InitRootSignature(RootSignature& rs);
-void InitPipelineState(PipelineState& pipelineState, RootSignature& rs, Shader& vs, Shader& ps);
+
 
 /**************************************************//**
  * ￥brief　コンストラクタ
@@ -124,9 +118,6 @@ bool Application::Init(HINSTANCE hInstance) {
 	GraphicsEngine::GetInstance()->GetCamera3D()->SetPosition({ 0.0f, 120.0f, 300.0f });
 	GraphicsEngine::GetInstance()->GetCamera3D()->SetTarget({ 0.0f, 120.0f, 0.0f });
 	
-
-	
-
 	return true;
 }
 
@@ -153,50 +144,50 @@ unsigned long Application::MainLoop(){
 	clock_t last_time = 0;		//アプリケーション開始からの前回フレームの開始時間
 
 	//TEST 各種初期化処理
-
 	// ルートシグネチャを作成
 	RootSignature rootSignature;
 	InitRootSignature(rootSignature);
 
-	// シェーダーをロード
-	Shader vs, ps;
-	vs.LoadVS("Assets/shader/sample.fx", "VSMain");
-	ps.LoadPS("Assets/shader/sample.fx", "PSMain");
+	// 定数バッファを作成
+	ConstantBuffer cb;
+	cb.Init(sizeof(Matrix));
+
+	// 三角形ポリゴンを定義
+	TrianglePolygon triangle;
+	triangle.Init(rootSignature);
+
+	// 三角形ポリゴンにUV座標を設定
+	triangle.SetUVCoord(
+		0,
+		0.0f,
+		1.0f
+	);
+
+	triangle.SetUVCoord(
+		1,
+		0.5f,
+		0.0f
+	);
+
+	triangle.SetUVCoord(
+		2,
+		1.0f,
+		1.0f
+	);
+
+	// テクスチャをロード
+	Texture tex;
+	tex.InitFromDDSFile(L"assets/image/SampleTexture.dds");
+
+	// ディスクリプタヒープを作成
+	DescriptorHeap ds;
+	ds.RegistConstantBuffer(0, cb); // ディスクリプタヒープに定数バッファを登録
+
+	// テクスチャをディスクリプタヒープに登録
+	ds.RegistShaderResource(0, tex);
+		
+	ds.Commit(); //ディスクリプタヒープへの登録を確定
 	
-	// パイプラインステートを作成
-	PipelineState pipelineState;
-	InitPipelineState(pipelineState, rootSignature, vs, ps);
-
-	// 三角形の頂点バッファを作成
-	// 頂点配列を定義
-	SimpleVertex vertices[] = {
-		{
-			{-0.5f, -0.5f, 0.0f},
-			{ 1.0f, 0.0f, 0.0f }
-		},
-		{
-			{ 0.0f, 0.5f, 0.0f },
-			{ 0.0f, 1.0f, 0.0f }
-		},
-		{
-			{ 0.5f, -0.5f, 0.0f },
-			{ 0.0f, 0.0f, 1.0f }
-		}
-	};
-
-	VertexBuffer triangleVB;
-	triangleVB.Init(sizeof(vertices), sizeof(vertices[0]));
-	triangleVB.Copy(vertices);
-
-	// 三角形のインデックスバッファを作成
-	// インデックス配列
-	uint16_t indices[] = {
-		0,1,2
-	};
-	IndexBuffer triangleIB;
-	triangleIB.Init(sizeof(indices), 2);
-	triangleIB.Copy(indices);
-
 	auto& renderContext = GraphicsEngine::GetInstance()->GetRenderContext();
 
 	while (m_pWindow->ExecMessage()) {
@@ -215,19 +206,21 @@ unsigned long Application::MainLoop(){
 		//!{
 		GraphicsEngine::GetInstance()->BeginRender();
 		
+		
 		// ルートシグネチャを設定
 		renderContext.SetRootSignature(rootSignature);
-		// パイプラインステートを設定
-		renderContext.SetPipelineState(pipelineState);
-		// プリミティブのトポロジーを設定
-		renderContext.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		// 頂点バッファを設定
-		renderContext.SetVertexBuffer(triangleVB);
-		// インデックスバッファを設定
-		renderContext.SetIndexBuffer(triangleIB);
-		// ドローコール
-		renderContext.DrawIndexed(3);
-	
+
+		// ワールド行列を作成
+		Matrix mWorld;
+
+		// ワールド行列をグラフィックメモリにコピー
+		cb.CopyToVRAM(mWorld);
+
+		//ディスクリプタヒープを設定
+		renderContext.SetDescriptorHeap(ds);
+
+		//三角形をドロー
+		triangle.Draw(renderContext);
 		
 		GraphicsEngine::GetInstance()->EndRender();
 
@@ -237,7 +230,7 @@ unsigned long Application::MainLoop(){
 
 	//ゲームの終了処理
 
-
+	int a = 0;
 
 	return m_pWindow->GetMessage();
 }
@@ -257,43 +250,9 @@ HINSTANCE Application::GetHInst() { return mHInst; }
 
 
 // ルートシグネチャの初期化
-void InitRootSignature(RootSignature& rs)
-{
+void InitRootSignature(RootSignature& rs){
 	rs.Init(D3D12_FILTER_MIN_MAG_MIP_LINEAR,
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP);
-}
-
-// パイプラインステートの初期化
-void InitPipelineState(PipelineState& pipelineState, RootSignature& rs, Shader& vs, Shader& ps)
-{
-	// 頂点レイアウトを定義する
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-	};
-
-	// パイプラインステートを作成
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = { 0 };
-	psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
-	psoDesc.pRootSignature = rs.Get();
-	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs.GetCompiledBlob());
-	psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps.GetCompiledBlob());
-	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-	psoDesc.DepthStencilState.DepthEnable = FALSE;
-	psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
-	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-	psoDesc.DepthStencilState.StencilEnable = FALSE;
-	psoDesc.SampleMask = UINT_MAX;
-	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
-	psoDesc.SampleDesc.Count = 1;
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-	pipelineState.Init(psoDesc);
 }

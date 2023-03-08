@@ -1,7 +1,24 @@
+/*****************************************************************//**
+ * \file   RenderContext_inline.h
+ * \brief  レンダリングコンテキストのインライン記述:循環参照回避
+ * 
+ * \author Hiroto Kuge
+ * \date   March 2023
+ *********************************************************************/
 #pragma once
+
+//=============================================================================
+// Include
+//=============================================================================
 #include "RenderContext.h"
 #include "RenderTarget.h"
 
+inline void RenderContext::SetDescriptorHeaps(int numDescriptorHeap, const DescriptorHeap* descHeaps[]) {
+	for (int i = 0; i < numDescriptorHeap; i++) {
+		m_descriptorHeaps[i] = descHeaps[i]->Get();
+	}
+	m_pCommandList->SetDescriptorHeaps(numDescriptorHeap, m_descriptorHeaps);
+}
 
 inline void RenderContext::SetDescriptorHeap(DescriptorHeap& descHeap) {
 	m_descriptorHeaps[0] = descHeap.Get();
@@ -54,6 +71,8 @@ inline void RenderContext::WaitUntilFinishDrawingToRenderTargets(int numRt, Rend
 		WaitUntilFinishDrawingToRenderTarget(*renderTargets[i]);
 	}
 }
+
+
 
 inline void RenderContext::SetRenderTargets(UINT numRT, RenderTarget* renderTargets[]) {
 	//d

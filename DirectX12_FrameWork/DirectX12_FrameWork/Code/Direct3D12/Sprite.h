@@ -38,12 +38,19 @@ enum AlphaBlendMode {
 // InitData Sturuct
 //=============================================================================
 struct SpriteInitData {
+	// 画面サイズ
 	uint32_t width = 0;		// スプライトの幅
 	uint32_t height = 0;	// スプライトの高さ
-
+	
+	// シェーダー関連
+	const char* m_vsEntryPointFunc = "VSMain";						// 頂点シェーダーのエントリーポイント
+	const char* m_psEntryPointFunc = "PSMain";						// ピクセルシェーダーのエントリーポイント
+	const char* m_fxFilePath = nullptr;								// .fxファイルのファイルパス
+	
+	// リソース関連
 	std::array<Texture*, MAX_TEXTURE>		pTextures = { nullptr };	// 外部指定のテクスチャ(GBuffer)	
 	std::array<const wchar_t*, MAX_TEXTURE> ddsFilePath = { nullptr };	// DDSファイルのファイルパス
-	void*			pExpandConstantBuffer = nullptr;						// ユーザー拡張の定数バッファ
+	void*			pExpandConstantBuffer = nullptr;					// ユーザー拡張の定数バッファ
 	uint32_t		expandConstantBufferSize = 0;						// ユーザー拡張の定数バッファのサイズ
 	ShaderResource* pExpandShaderResoruceView = nullptr;				// ユーザー拡張のシェーダーリソース
 	AlphaBlendMode	alphaBlendMode = AlphaBlendMode_None;				// アルファブレンディングモード
@@ -127,9 +134,9 @@ private:
 	VertexBuffer	m_vertexBuffer;		// 頂点バッファ
 	IndexBuffer		m_indexBuffer;		// インデックスバッファ
 
-	uint32_t m_numTexture = 0;	// テクスチャの数
-	Texture  m_textures[MAX_TEXTURE];										 // 描画に使用するテクスチャ(各種GBufferのレンダリング結果が入るバターンもあるよ)
-	std::shared_ptr<Texture> m_pTextureExternals[MAX_TEXTURE] = { nullptr }; // 外部から指定されたテクスチャ
+	uint32_t m_numTexture = 0;								// テクスチャの数
+	Texture  m_textures[MAX_TEXTURE];						// 描画に使用するテクスチャ(各種GBufferのレンダリング結果が入るバターンもあるよ)
+	Texture* m_pTextureExternals[MAX_TEXTURE] = { nullptr }; // 外部から指定されたテクスチャ
 	
 	Vector3		m_position;		// 座標
 	Vector2		m_size;			// サイズ
@@ -144,12 +151,15 @@ private:
 	};
 	SpriteConstantBuffer	m_constantBufferCPU;					 // スプライト用定数バッファ
 	ConstantBuffer			m_constantBufferGPU;					 // GPU側の定数バッファ
-	void*					m_userExpandConstantBufferCPU = nullptr; // ユーザー拡張の定数バッファ(CPU側)
 	ConstantBuffer			m_userExpandConstantBufferGPU;			 // ユーザー拡張の定数バッファ(GPU側)
+	void*					m_userExpandConstantBufferCPU = nullptr; // ユーザー拡張の定数バッファ(CPU側)
 	
 	DescriptorHeap	m_descriptorHeap;	// ディスクリプタヒープ
 	RootSignature	m_rootSignature;	// ルートシグネチャ
 	PipelineState	m_pipelineState;	// パイプラインステート
+	Shader			m_vs;				// 頂点シェーダー
+	Shader			m_ps;				// ピクセルシェーダー
+
 
 	//!}
 	//-----------------------------------------------------------------------------
@@ -163,6 +173,13 @@ private:
 	 * \param initData 初期化データ
 	 *********************************************************************/
 	void InitTextures(const SpriteInitData& initData);
+
+	/*****************************************************************//**
+	 * \brief シェーダーを初期化
+	 * 
+	 * \param initData 初期化データ
+	 *********************************************************************/
+	void InitShader(const SpriteInitData& initData);
 
 	/*****************************************************************//**
 	 * \brief 頂点バッファと定数バッファを初期化

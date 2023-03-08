@@ -17,10 +17,10 @@
 // デストラクタ
 //=============================================================================
 IndexBuffer::~IndexBuffer(){ 
-	
+	if (m_pIndexBuffer) {
+		m_pIndexBuffer->Release();
+	}
 }
-
-
 
 //=============================================================================
 // 初期化処理
@@ -43,11 +43,11 @@ void IndexBuffer::Init(uint32_t size, uint32_t stride){
 		&rDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(m_pIndexBuffer.GetAddressOf())
+		IID_PPV_ARGS(&m_pIndexBuffer)
 	);
 
 	//インデックスバッファのビューを作成
-	m_indexBufferView.BufferLocation = m_pIndexBuffer.Get()->GetGPUVirtualAddress();
+	m_indexBufferView.BufferLocation = m_pIndexBuffer->GetGPUVirtualAddress();
 
 
 	//ストライドは４バイト固定
