@@ -78,7 +78,7 @@ int g_numDescriptorHeap = 0;
 // ヒープへの登録を確定
 //=============================================================================
 void DescriptorHeap::Commit(){
-	ID3D12Device5* pDevice =GraphicsEngine::GetInstance()->GetDevice();
+	ID3D12Device5* pDevice = GraphicsEngine::GetInstance()->GetDevice();
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 
 	srvHeapDesc.NumDescriptors = m_numShaderResource + m_numConstantBuffer + m_numUavResource;
@@ -103,10 +103,10 @@ void DescriptorHeap::Commit(){
 		for (int i = 0; i < m_numConstantBuffer; i++) {
 			//@todo bug
 			if (m_constantBuffers[i] != nullptr) {
-				m_constantBuffers[i]->RegistConstantBufferView(cpuHandle,bufferNo);
+				m_constantBuffers[i]->RegistConstantBufferView(cpuHandle, bufferNo);
 			}
 			//次に進める
-			cpuHandle.ptr += m_cbrSrvDescriptorSize;
+			cpuHandle.ptr += GraphicsEngine::GetInstance()->GetCbrSrvDescriptorSize();
 		}
 
 		//続いてシェーダーリソース
@@ -115,7 +115,7 @@ void DescriptorHeap::Commit(){
 				m_shaderResources[i]->RegistShaderResourceView(cpuHandle, bufferNo);
 			}
 			//次に進める
-			cpuHandle.ptr += m_cbrSrvDescriptorSize;
+			cpuHandle.ptr += GraphicsEngine::GetInstance()->GetCbrSrvDescriptorSize();
 		}
 
 		//続いてUAV
@@ -124,19 +124,19 @@ void DescriptorHeap::Commit(){
 				m_uavResources[i]->RegistUnorderAccessView(cpuHandle, bufferNo);
 			}
 			//次に進める
-			cpuHandle.ptr += m_cbrSrvDescriptorSize;
+			cpuHandle.ptr += GraphicsEngine::GetInstance()->GetCbrSrvDescriptorSize();
 		}
 
 		//定数バッファのディスクリプタヒープの開始ハンドルを計算
 		m_cbGpuDescriptorStart[bufferNo] = gpuHandle;
 		//シェーダーリソースのディスクリプタヒープの開始ハンドルを計算
 		m_srGpuDescriptorStart[bufferNo] = gpuHandle;
-		m_srGpuDescriptorStart[bufferNo].ptr += (UINT64)m_cbrSrvDescriptorSize * m_numConstantBuffer;
+		m_srGpuDescriptorStart[bufferNo].ptr += (UINT64)GraphicsEngine::GetInstance()->GetCbrSrvDescriptorSize() * m_numConstantBuffer;
 		//UAVリソースのディスクリプタヒープの開始ハンドルを計算
 		m_uavGpuDescriptorStart[bufferNo] = gpuHandle;
-		m_uavGpuDescriptorStart[bufferNo].ptr += (UINT64)m_cbrSrvDescriptorSize * (m_numShaderResource + m_numConstantBuffer);
+		m_uavGpuDescriptorStart[bufferNo].ptr += (UINT64)GraphicsEngine::GetInstance()->GetCbrSrvDescriptorSize() * (m_numShaderResource + m_numConstantBuffer);
 
-		gpuHandle.ptr += (UINT64)m_cbrSrvDescriptorSize * (m_numShaderResource + m_numConstantBuffer + m_numUavResource);
+		gpuHandle.ptr += (UINT64)GraphicsEngine::GetInstance()->GetCbrSrvDescriptorSize() * (m_numShaderResource + m_numConstantBuffer + m_numUavResource);
 
 		bufferNo++;
 	}

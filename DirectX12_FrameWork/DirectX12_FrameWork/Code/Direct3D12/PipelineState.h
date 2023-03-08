@@ -37,22 +37,6 @@ public:
 	~PipelineState();
 	
 	/*****************************************************************//**
-	 * \brief 初期化処理
-	 *
-	 * \param desc				構成設定
-	 * \param pVsPath			頂点シェーダーパス
-	 * \param pPsPath			ピクセルシェーダーパス
-	 * \param rootSignature		ルートシグネチャ
-	 * \return true				初期化に成功
-	 * \return false			初期化に失敗
-	 *********************************************************************/
-	void Init(
-		D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc,
-		const wchar_t* pVsPath,
-		const wchar_t* pPsPath,
-		ID3D12RootSignature* pRootSignature);
-
-	/*****************************************************************//**
 	 * \brief 初期化
 	 * \param desc	初期化設定
 	 *********************************************************************/
@@ -66,7 +50,7 @@ public:
 	 * \return パイプラインステートオブジェクト(ポインタ)
 	 *********************************************************************/
 	ID3D12PipelineState* Get() { 
-		return m_pPipelineState.Get(); 
+		return m_pPipelineState; 
 	}
 
 
@@ -77,19 +61,14 @@ private:
 	//-----------------------------------------------------------------------------
 	//!{
 			
-	ComPtr<ID3D12PipelineState>			m_pPipelineState;	// パイプラインステート
-	ComPtr<ID3DBlob>					m_pVsBlob;			// 頂点シェーダー
-	ComPtr<ID3DBlob>					m_pPsBlob;			// ピクセルシェーダー
+	ID3D12PipelineState* m_pPipelineState = nullptr;	// パイプラインステート
 
 	//!}
 	//-----------------------------------------------------------------------------
 	// private methods.
 	//-----------------------------------------------------------------------------
 	//!{
-
-	PipelineState(const PipelineState&) = delete;		// アクセス禁止
-	void operator = (const PipelineState&) = delete;	// アクセス禁止
-
+			/* Nothing */
 	//!} 
 };
 

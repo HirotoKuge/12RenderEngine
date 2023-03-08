@@ -12,17 +12,14 @@
 #include "../stdafx.h"
 #include "VertexBuffer.h"
 
-//-----------------------------------------------------------------------------
-// コンストラクタ
-//-----------------------------------------------------------------------------
-VertexBuffer::VertexBuffer()
-{}
-
 //=============================================================================
 // デストラクタ
 //=============================================================================
-VertexBuffer::~VertexBuffer()
-{ }
+VertexBuffer::~VertexBuffer(){
+	if (m_pVertexBuffer) {
+		m_pVertexBuffer->Release();
+	}
+}
 
 //=============================================================================
 // 初期化処理
@@ -38,7 +35,8 @@ void VertexBuffer::Init(uint32_t size, uint32_t stride){
 		&rDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(m_pVertexBuffer.GetAddressOf()));
+		IID_PPV_ARGS(&m_pVertexBuffer)
+	);
 
 	m_pVertexBuffer->SetName(L"VertexBuffer");
 

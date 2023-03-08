@@ -36,6 +36,7 @@ public:
 	 * \param entryFuncName	エントリーポイントの関数名
 	 *********************************************************************/
 	void LoadPS(const char* filePath, const char* entryFuncName);
+	void LoadPS(const wchar_t* filePath, const char* entryFuncName);
 	
 	/*****************************************************************//**
 	 * \brief 頂点シェーダーをロード
@@ -44,6 +45,7 @@ public:
 	 * \param entryFuncName	エントリーポイントの関数名
 	 *********************************************************************/
 	void LoadVS(const char* filePath, const char* entryFuncName);
+	void LoadVS(const wchar_t* filePath, const char* entryFuncName);
 	
 	/*****************************************************************//**
 	 * \brief コンピュートシェーダーをロード
@@ -52,6 +54,7 @@ public:
 	 * \param entryFuncName	エントリーポイントの関数名
 	 *********************************************************************/
 	void LoadCS(const char* filePath, const char* entryFuncName);
+	void LoadCS(const wchar_t* filePath, const char* entryFuncName);
 	
 	
 	/*****************************************************************//**
@@ -68,7 +71,7 @@ public:
 	 * \return コンパイル済シェーダー
 	 *********************************************************************/
 	ID3DBlob* GetCompiledBlob() const{
-		return m_pBlob.Get();
+		return m_pBlob;
 	}
 
 	/*****************************************************************//**
@@ -86,8 +89,8 @@ private:
 	//-----------------------------------------------------------------------------
 	//!{
 	
-	ComPtr<ID3DBlob> m_pBlob;		//コンパイル済みのシェーダーデータ
-	ComPtr<IDxcBlob> m_pDxcBlob;	//DXCコンパイラを使用したときのシェーダーデータ
+	ID3DBlob* m_pBlob	 = nullptr;	//コンパイル済みのシェーダーデータ
+	IDxcBlob* m_pDxcBlob = nullptr;	//DXCコンパイラを使用したときのシェーダーデータ
 	bool m_isInited = false;		//初期化済みかフラグ
 
 	//!}
@@ -97,11 +100,13 @@ private:
 	
 	/*****************************************************************//**
 	 * \brief シェーダーをロード
+	 * 
 	 * \param filePath		ファイルパス
 	 * \param entryFuncName	エントリーモードの関数名
 	 * \param shaderModel	シェーダーモデル
 	 *********************************************************************/
 	void Load(const char* filePath, const char* entryFuncName, const char* shaderModel);
+	void Load(const wchar_t* filePath, const char* entryFuncName, const char* shaderModel);
 	//!} 
 };
 

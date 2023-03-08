@@ -52,8 +52,6 @@ public:
 	//-----------------------------------------------------------------------------
 	//!{
 	
-	RenderContext(){}
-
 	/*****************************************************************//**
 	 * \brief 初期化
 	 *  
@@ -191,14 +189,7 @@ public:
 	 * \param numDescriptorHeap ディスクリプタヒープの数
 	 * \param descPools			ディスクリプタヒープの配列
 	 *********************************************************************/
-	/*
-	void SetDescriptorHeaps(int numDescriptorHeap, const DescriptorHeap* descHeaps[]){
-		for (int i = 0; i < numDescriptorHeap; i++) {
-			m_descriptorHeaps[i] = descHeaps[i]->Get();
-		}
-		m_pCommandList->SetDescriptorHeaps(numDescriptorHeap, m_descriptorHeaps);
-	}
-	*/
+	void SetDescriptorHeaps(int numDescriptorHeap, const DescriptorHeap* descHeaps[]);
 
 	/*****************************************************************//**
 	 * \brief 定数バッファを設定

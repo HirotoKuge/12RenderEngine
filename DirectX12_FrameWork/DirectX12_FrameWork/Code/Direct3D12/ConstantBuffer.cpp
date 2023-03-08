@@ -112,6 +112,6 @@ void* ConstantBuffer::GetMappedPtr() const{
 // ƒRƒs[
 //=============================================================================
 void ConstantBuffer::CopyToVRAM(void* data){
-	auto backBufferIndex =GraphicsEngine::GetInstance()->GetBackBufferIndex();
+	auto backBufferIndex = GraphicsEngine::GetInstance()->GetBackBufferIndex();
 	memcpy(m_pConstBufferCPU[backBufferIndex], data, m_size);
 }

@@ -82,10 +82,6 @@ bool Material::Init(
 		offsetInDescriptorsFromTableStartSRV
 	);
 
-
-	
-	
-
 	return true;
 }
 
@@ -103,19 +99,24 @@ void Material::BeginRender(RenderContext& rc){
 void Material::InitPipelineState(const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormats){
 	// グラフィックスパイプラインステートを設定
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
-	desc.InputLayout = MeshVertex::InputLayout;
-	desc.pRootSignature = m_rootSignature.Get();
-	desc.VS = D3D12_SHADER_BYTECODE(m_pVSShader->GetCompiledBlob());
-	desc.PS = D3D12_SHADER_BYTECODE(m_pPSShader->GetCompiledBlob());
-	desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);		// ラスタライザーはデフォルト
-	desc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;				// カリングはなし
-	desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);				// ブレンドステートもデフォルト
-	desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);	// 深度ステンシルはデフォルトを使う
-	desc.DepthStencilState.DepthEnable = TRUE;
-	desc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-	desc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-	desc.DepthStencilState.StencilEnable = FALSE;
+	
+	desc.InputLayout		= MeshVertex::InputLayout;
+	desc.pRootSignature		= m_rootSignature.Get();
+	desc.VS					= D3D12_SHADER_BYTECODE(m_pVSShader->GetCompiledBlob());
+	desc.PS					= D3D12_SHADER_BYTECODE(m_pPSShader->GetCompiledBlob());
+	
+	desc.RasterizerState			= CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);	// ラスタライザーはデフォルト
+	desc.RasterizerState.CullMode	= D3D12_CULL_MODE_NONE;				// カリングはなし
+	desc.BlendState					= CD3DX12_BLEND_DESC(D3D12_DEFAULT);				// ブレンドステートもデフォルト
+	
+	desc.DepthStencilState					= CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);	// 深度ステンシルはデフォルトを使う
+	desc.DepthStencilState.DepthEnable		= TRUE;
+	desc.DepthStencilState.DepthWriteMask	= D3D12_DEPTH_WRITE_MASK_ALL;
+	desc.DepthStencilState.DepthFunc		= D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	desc.DepthStencilState.StencilEnable	= FALSE;
+	
 	desc.SampleMask = UINT_MAX;
+	
 	desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;// 三角形を描画
 
 	int numRenderTarget = 0;
@@ -131,7 +132,6 @@ void Material::InitPipelineState(const std::array<DXGI_FORMAT, MAX_RENDERING_TAR
 	desc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 	desc.SampleDesc.Count = 1;
 
-
 	m_pipelineState.Init(desc);
 
 }
@@ -146,6 +146,16 @@ void Material::InitShader(const wchar_t* pVSShaderPath, const wchar_t* pPSShader
 	m_pPSShader = new Shader();
 	m_pPSShader->LoadPScso(pPSShaderPath);
 
+}
+void Material::InitShaders(
+	const char* fxFilePath,
+	const char* vsEntryPointFunc,
+	const char* vsSkinEntriyPointFunc,
+	const char* psEntryPointFunc
+){
+	//シェーダーをロードする
+	m_pVSShader->LoadVS("Assets/shader/sample.fx", "VSMain");
+	m_pPSShader->LoadPS("Assets/shader/sample.fx", "PSMain");
 }
 
 //=============================================================================

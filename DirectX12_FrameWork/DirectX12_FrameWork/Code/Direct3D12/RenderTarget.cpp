@@ -79,7 +79,7 @@ bool RenderTarget::CreateDescriptorHeap(ID3D12Device5*& pDevice){
 	desc.NumDescriptors = GraphicsEngine::FRAME_BUFFER_COUNT;
 	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	pDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(m_pRTVHeap.GetAddressOf()));
+	pDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_pRTVHeap));
 	if (m_pRTVHeap == nullptr) {
 		//RTV用のディスクリプタヒープの作成に失敗
 		return false;
@@ -159,7 +159,7 @@ bool RenderTarget::CreateRenderTargetTexture(
 		return false;
 	}
 
-	m_rtTexture.InitFromD3DResource(m_pRTTextureDx12.Get());
+	m_rtTexture.InitFromD3DResource(m_pRTTextureDx12);
 	
 	return true;
 
@@ -214,7 +214,7 @@ void RenderTarget::CreateDescriptor(ID3D12Device5*& pDevice){
 	if (m_pDSTexture) {
 		//深度テクスチャのディスクリプタを作成
 		auto dsvHandle = m_pDSVHeap->GetCPUDescriptorHandleForHeapStart();
-		pDevice->CreateDepthStencilView(m_pDSTexture.Get(), nullptr, dsvHandle);
+		pDevice->CreateDepthStencilView(m_pDSTexture, nullptr, dsvHandle);
 	}
 
 }

@@ -20,17 +20,13 @@ enum {
 };
 
 //=============================================================================
-// コンストラクタ
-//=============================================================================
-RootSignature::RootSignature()
-	:m_pRootSignature(nullptr)
-{ /* Do Nothing */ }
-
-//=============================================================================
 // デストラクタ
 //=============================================================================
-RootSignature::~RootSignature()
-{ Term(); }
+RootSignature::~RootSignature(){
+	if (m_pRootSignature) {
+		m_pRootSignature->Release();
+	}
+}
 
 //=============================================================================
 // 初期化処理
@@ -99,24 +95,10 @@ bool RootSignature::Init(
 	Microsoft::WRL::ComPtr<ID3DBlob> signature;
 	Microsoft::WRL::ComPtr<ID3DBlob> error;
 	D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
-	auto hr = pDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(m_pRootSignature.GetAddressOf()));
+	auto hr = pDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_pRootSignature));
 	if (FAILED(hr)) {
 		//ルートシグネチャの作成に失敗した
 		return false;
 	}
 	return true;
 }
-
-
-//=============================================================================
-// 終了処理
-//=============================================================================
-void RootSignature::Term() {
-	m_pRootSignature.Reset();
-}
-
-//=============================================================================
-// ルートシグネチャ取得
-//=============================================================================
-ID3D12RootSignature* RootSignature::Get()
-{ return m_pRootSignature.Get(); }

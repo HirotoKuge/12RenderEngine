@@ -172,7 +172,7 @@ void Sprite::InitTextures(const SpriteInitData& initData) {
 		// 外部テクスチャ(GBufferなど)を指定されている
 		int texNo = 0;
 		while (initData.pTextures[texNo] != nullptr) {
-			m_pTextureExternals[texNo].reset(initData.pTextures[texNo]);
+			m_pTextureExternals[texNo] = initData.pTextures[texNo];
 			texNo++;
 		}
 		m_numTexture = texNo;
@@ -182,6 +182,20 @@ void Sprite::InitTextures(const SpriteInitData& initData) {
 		MessageBoxA(nullptr, "使用するテクスチャの情報を設定してください", "エラー", MB_OK);
 		std::abort();
 	}
+}
+
+//=============================================================================
+// シェーダーを初期化
+//=============================================================================
+void Sprite::InitShader(const SpriteInitData& initData){
+	if (initData.m_fxFilePath == nullptr) {
+		MessageBoxA(nullptr, "fxファイルが指定されていません", "エラー", MB_OK);
+		std::abort();
+	}
+
+	//シェーダーをロードする
+	m_vs.LoadVS(initData.m_fxFilePath, initData.m_vsEntryPointFunc);
+	m_ps.LoadPS(initData.m_fxFilePath, initData.m_psEntryPointFunc);
 }
 
 //=============================================================================
@@ -242,10 +256,13 @@ void Sprite::InitPipelineState(const SpriteInitData& initData) {
 	// グラフィックスパイプラインステートを設定.
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
 	desc.InputLayout						= { inputElementDescs, _countof(inputElementDescs) };
+	desc.pRootSignature						= m_rootSignature.Get();
+	desc.VS									= D3D12_SHADER_BYTECODE(m_vs.GetCompiledBlob());
+	desc.PS									= D3D12_SHADER_BYTECODE(m_ps.GetCompiledBlob());
 	desc.RasterizerState					= CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);	// ラスタライザーはデフォルト
 	desc.RasterizerState.CullMode			= D3D12_CULL_MODE_NONE;						// カリングはなし
-	
 	desc.BlendState							= CD3DX12_BLEND_DESC(D3D12_DEFAULT);		// ブレンドステートもデフォルト
+	
 	if (initData.alphaBlendMode == AlphaBlendMode_Trans) {
 		//半透明合成のブレンドステートを作成する
 		desc.BlendState.RenderTarget[0].BlendEnable = true;
@@ -281,26 +298,7 @@ void Sprite::InitPipelineState(const SpriteInitData& initData) {
 	desc.SampleDesc.Count = 1;				// サンプラーは1
 
 	// パイプラインステートオブジェクトの生成
-	// TODO:シェーダーの扱い方を考える
-	// クラスのが扱いやすそうだなとは思う
-	// 後はシェーダーファイルもなんか使いやすいのにしたい
-#ifdef _DEBUG
-	m_pipelineState.Init(
-		desc,
-		L"Assets/Shader/DefferdSpriteVS.cso",
-		L"Assets/Shader/DefferdSpritePS.cso",
-		m_rootSignature.Get());
-
-#else
-	m_pPipelineState.Init(
-		pDevice,
-		desc,
-		L"Assets/Shader/DefferdSpritePS.cso",
-		L"Assets/Shader/DefferdSpritePS.cso",
-		m_pRootSignature->Get());
-
-#endif // _DEBUG
-
+	m_pipelineState.Init(desc);
 }
 
 //=============================================================================
