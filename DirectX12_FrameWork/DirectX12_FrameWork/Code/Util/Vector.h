@@ -46,7 +46,6 @@ public:
 		float v[2];
 	};
 
-
 	//!} 
 	//-----------------------------------------------------------------------------
 	// public methods.
@@ -123,20 +122,32 @@ private:
 	// private variables.
 	//-----------------------------------------------------------------------------
 	//!{
+			/* Nothing */
 	//!}
 	//-----------------------------------------------------------------------------
 	// private methods.
 	//-----------------------------------------------------------------------------
 	//!{
+			/* Nothing */
 	//!} 
-
 };
 
 
 //=============================================================================
-/// 3次元ベクトル
+/// 3次元ベクトルクラス 
 //=============================================================================
 class Vector3 {
+	//-----------------------------------------------------------------------------
+	// list of friends classes and methods.
+	//-----------------------------------------------------------------------------	
+	//!{
+			/* Nothing */
+	//!} 
+public:
+	//-----------------------------------------------------------------------------
+	// public variables.
+	//-----------------------------------------------------------------------------
+	//!{
 public:
 	union {
 		DirectX::XMFLOAT3 vec;
@@ -154,6 +165,11 @@ public:
 	static const Vector3 AxisY;
 	static const Vector3 AxisZ;
 	static const Vector3 One;
+	//!} 
+	//-----------------------------------------------------------------------------
+	// public methods.
+	//-----------------------------------------------------------------------------
+	//!{
 public:
 	/*****************************************************************//**
 	 * \brief XMVECTORへの暗黙の変換
@@ -391,19 +407,12 @@ public:
 		Scale(scale);
 	}
 
-	/// <summary>
-	/// 最大値を設定
-	/// </summary>
-	/// <remarks>
-	/// 下記のような処理が行われています
-	/// this->x = max( this->x, v.x );
-	/// this->y = max( this->y, v.y );
-	/// this->z = max( this->z, v.z );
-	/// </remarks>
 	
 	/*****************************************************************//**
 	 * \brief 最大値を設定
-	 * \param v
+	 * 
+	 * \param v 要素ごとに最大値が入ったVector3
+	 * \memo 内部では要素nについてstd::max(v.n,this->n)の処理を行っている
 	 *********************************************************************/
 	void Max(const Vector3& v){
 		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat3(&vec);
@@ -411,82 +420,93 @@ public:
 		DirectX::XMStoreFloat3(&vec, DirectX::XMVectorMax(xmv0, xmv1));
 	}
 
-	/// <summary>
-	/// 最小値を設定
-	/// </summary>
-	/// <remarks>
-	/// 下記のような処理が行われています
-	/// this->x = min( this->x, v.x );
-	/// this->y = min( this->y, v.y );
-	/// this->z = min( this->z, v.z );
-	/// </remarks>
-	void Min(const Vector3& v)
-	{
+	/*****************************************************************//**
+	 * \brief 最小値を設定
+	 *
+	 * \param v 要素ごとに最小値が入ったVector3
+	 * \memo 内部では要素nについてstd::min(v.n,this->n)の処理を行っている
+	 *********************************************************************/
+	void Min(const Vector3& v){
 		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat3(&vec);
 		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat3(&v.vec);
 		DirectX::XMStoreFloat3(&vec, DirectX::XMVectorMin(xmv0, xmv1));
 	}
 
-	/// <summary>
-	/// 加算代入演算子
-	/// </summary>
-	/// <remarks>
-	///	ベクトルクラスに下記のような加算代入の機能を提供します
-	///	Vector3 v0 = {20.0f, 30.0f, 40.0f};
-	///	Vector3 v1 = {10.0f, 20.0f, 30.0f};
-	///	v0 += v1;
-	/// </remarks>
-	const Vector3& operator+=(const Vector3& _v)
-	{
+	/*****************************************************************//**
+	 * \brief 加算代入演算子
+	 * 
+	 * \param _v 加算値
+	 * \return 
+	 *********************************************************************/
+	const Vector3& operator+=(const Vector3& _v){
 		Add(_v);
 		return *this;
 	}
-	/// <summary>
-	/// 乗算代入演算子
-	/// </summary>
-	/// <remarks>
-	///	ベクトルクラスに下記のような乗算代入演算の機能を提供します
-	/// Vector3 v = {20.0f, 30.0f, 40.0f};
-	///	v *= 10;
-	/// </remarks>
-	const Vector3& operator*=(float s)
-	{
+	
+	/*****************************************************************//**
+	 * \brief 乗算代入演算子
+	 * 
+	 * \param s 倍率
+	 * \return 
+	 *********************************************************************/
+	const Vector3& operator*=(float s){
 		Scale(s);
 		return *this;
 	}
-	/// <summary>
-	/// 減算代入演算子
-	/// </summary>
-	/// <remarks>
-	/// ベクトルクラスに下記のような減算代入演算の機能を提供します
-	/// Vector3 v0 = {20.0f, 30.0f, 40.0f};
-	///	Vector3 v1 = {10.0f, 20.0f, 30.0f};
-	///	v0 -= v1;
-	/// </remarks>
-	const Vector3& operator-=(const Vector3& _v)
-	{
+	
+	/*****************************************************************//**
+	 * \brief 減算代入演算子
+	 * \param _v 減算値
+	 * \return 
+	 *********************************************************************/
+	const Vector3& operator-=(const Vector3& _v){
 		Subtract(_v);
 		return *this;
 	}
-	/// <summary>
-	/// 除算代入演算子
-	/// </summary>
-	/// <remarks>
-	/// ベクトルクラスに下記のような除算代入演算の機能を提供します
-	/// Vector3 v = {20.0f, 30.0f, 40.0f};
-	///	v /= 10;
-	/// </remarks>
-	const Vector3& operator/=(const float s)
-	{
+	
+	/*****************************************************************//**
+	 * \brief 除算代入演算子
+	 * 
+	 * \param s 割る値
+	 * \return 
+	 *********************************************************************/
+	const Vector3& operator/=(const float s){
 		Div(s);
 		return *this;
 	}
+	//!} 
+private:
+	//-----------------------------------------------------------------------------
+	// private variables.
+	//-----------------------------------------------------------------------------
+	//!{
+			/* Nothing */
+	//!}
+	//-----------------------------------------------------------------------------
+	// private methods.
+	//----------------------------------------------------------------------------- 
+	//!{
+			/* Nothing */
+	//!} 
 };
-/// <summary>
-/// 4次元ベクトルクラス
-/// </summary>
+
+
+//=============================================================================
+// 4次元ベクトル
+//=============================================================================
 class Vector4 {
+	//-----------------------------------------------------------------------------
+	// list of friends classes and methods.
+	//-----------------------------------------------------------------------------	
+	//!{
+			/* Nothing */
+	//!} 
 public:
+	//-----------------------------------------------------------------------------
+	// public variables.
+	//-----------------------------------------------------------------------------
+	//!{
+
 	union {
 		DirectX::XMFLOAT4 vec;
 		struct { float x, y, z, w; };
@@ -497,211 +517,230 @@ public:
 	static const Vector4 Black;
 	static const Vector4 Yellow;
 	static const Vector4 Gray;
+
+	//!} 
+	//-----------------------------------------------------------------------------
+	// public methods.
+	//-----------------------------------------------------------------------------
+	//!{
 public:
-	/// <summary>
-	/// XMVECTORへの暗黙の型変換
-	/// </summary>
-	/// <returns></returns>
-	operator DirectX::XMVECTOR() const
-	{
+	
+	/*****************************************************************//**
+	 * \brief XMVECTOR型への暗黙の型変換
+	 *********************************************************************/
+	operator DirectX::XMVECTOR() const{
 		return DirectX::XMLoadFloat4(&vec);
 	}
-	/// <summary>
-	/// コンストラクタ
-	/// </summary>
-	/// <remarks>
-	/// x,y,zが0.0、wは1.0で初期化されます
-	/// </remarks>
-	explicit Vector4()
-	{
+	
+	/*****************************************************************//**
+	 * \brief 初期化
+	 *********************************************************************/
+	explicit Vector4(){
 		x = y = z = 0.0f;
 		w = 1.0f;
 	}
-	/// <summary>
-	/// ベクトルのコピー
-	/// </summary>
+	
+	
+	/*****************************************************************//**
+	 * \brief コピー
+	 * 
+	 * \param dst	
+	 *********************************************************************/
 	template<class TVector4>
-	void 
-	To(TVector4& dst) const
-	{
+	void  CopyTo(TVector4& dst) const{
 		dst.x = x;
 		dst.y = y;
 		dst.z = z;
 		dst.w = w;
 	}
 
-	/// <summary>
-	/// 代入演算子
-	/// </summary>
-	/// <remarks>
-	/// ベクトルクラスに下記のような代入演算の機能を提供します
-	/// Vector4 v0 = {10.0f, 20.0f, 30.0f, 10.0f};
-	/// Vector4 v1;
-	/// v1 = v0;
-	/// </remarks>
-	Vector4& operator=(const Vector4& _v)
-	{
+	/*****************************************************************//**
+	 * \brief 代入演算子
+	 *********************************************************************/
+	Vector4& operator=(const Vector4& _v){
 		vec = _v.vec;
 		return *this;
 	}
 
-	/// <summary>
-	/// コンストラクタ
-	/// </summary>
-	Vector4(float x, float y, float z, float w)
-	{
+	/*****************************************************************//**
+	 * \brief コンストラクタ
+	 * 
+	 * \param x X成分
+	 * \param y	Y成分
+	 * \param z	Z成分
+	 * \param w	W成分
+	 *********************************************************************/
+	Vector4(float x, float y, float z, float w){
 		Set(x, y, z, w);
 	}
-	/// <summary>
-	/// 3次元のベクトルデータを引数で受け取るコンストラクタ
-	/// </summary>
-	/// <remarks>
-	/// wには1.0が格納されます
-	/// </remarks>
-	Vector4(const Vector3& v)
-	{
+	
+
+	/*****************************************************************//**
+	 * \brief 引数付きコンストラクタ
+	 * 
+	 * \param v 3次元ベクトル
+	 * \memo wには1.0を格納
+	 *********************************************************************/
+	Vector4(const Vector3& v){
 		Set(v);
 	}
-	/// <summary>
-	/// ベクトルの各要素を設定
-	/// </summary>
-	void Set(float _x, float _y, float _z, float _w)
-	{
+
+	/*****************************************************************//**
+	 * \brief ベクトルの各要素を設定
+	 * \param _x X成分
+	 * \param _y Y成分
+	 * \param _z Z成分
+	 * \param _w W成分
+	 *********************************************************************/
+	void Set(float _x, float _y, float _z, float _w){
 		this->x = _x;
 		this->y = _y;
 		this->z = _z;
 		this->w = _w;
 	}
-	/// <summary>
-	/// ベクトルを正規化
-	/// </summary>
-	void Normalize()
-	{
+	
+	/*****************************************************************//**
+	 * \brief ベクトルを正規化
+	 *********************************************************************/
+	void Normalize(){
 		DirectX::XMVECTOR xmv = DirectX::XMLoadFloat4(&vec);
 		xmv = DirectX::XMVector4Normalize(xmv);
 		DirectX::XMStoreFloat4(&vec, xmv);
 	}
-	/// <summary>
-	/// ベクトルを設定
-	/// </summary>
-	/// <param name="_v"></param>
-	void Set(const Vector4& _v)
-	{
+	
+	/*****************************************************************//**
+	 * \brief ベクトルを設定
+	 * 
+	 * \param _v 設定元
+	 *********************************************************************/
+	void Set(const Vector4& _v){
 		*this = _v;
 	}
-	/// <summary>
-	/// 3次元ベクトルデータをもとに、ベクトルを設定
-	/// </summary>
-	/// <remarks>
-	/// wには1.0が設定されます
-	/// </remarks>
-	void Set(const Vector3& _v)
-	{
+
+	/*****************************************************************//**
+	 * \brief 3次元ベクトルを設定
+	 * 
+	 * \param _v
+	 * \memo W成分には1.0が設定されます
+	 *********************************************************************/
+	void Set(const Vector3& _v){
 		this->x = _v.x;
 		this->y = _v.y;
 		this->z = _v.z;
 		this->w = 1.0f;
 	}
-	/// <summary>
-	/// ベクトルを加算
-	/// </summary>
-	/// <remarks>
-	/// this += _v;
-	/// </remarks>
-	void Add(const Vector4& _v)
-	{
+	
+	/*****************************************************************//**
+	 * \brief ベクトルを加算
+	 * 
+	 * \param _v
+	 *********************************************************************/
+	void Add(const Vector4& _v){
 		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat4(&vec);
 		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat4(&_v.vec);
 		DirectX::XMVECTOR xmvr = DirectX::XMVectorAdd(xmv0, xmv1);
-		DirectX::XMStoreFloat4(&vec, xmvr);
-	}
-	/// <summary>
-	/// ベクトルの加算
-	/// </summary>
-	/// <remarks>
-	/// this = v0 + v1;
-	/// </remarks>
-	void Add(const Vector4& v0, const Vector4& v1)
-	{
-		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat4(&v0.vec);
-		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat4(&v1.vec);
-		DirectX::XMVECTOR xmvr = DirectX::XMVectorAdd(xmv0, xmv1);
-		DirectX::XMStoreFloat4(&vec, xmvr);
-	}
-	/// <summary>
-	/// ベクトルの減算
-	/// </summary>
-	/// <remarks>
-	/// this -= _v;
-	/// </remarks>
-	void Subtract(const Vector4& _v)
-	{
-		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat4(&vec);
-		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat4(&_v.vec);
-		DirectX::XMVECTOR xmvr = DirectX::XMVectorSubtract(xmv0, xmv1);
-		DirectX::XMStoreFloat4(&vec, xmvr);
-	}
-	/// <summary>
-	/// ベクトルの減算
-	/// </summary>
-	/// <remarks>
-	/// this = v0 - v1;
-	/// </remarks>
-	void Subtract(const Vector4& v0, const Vector4& v1)
-	{
-		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat4(&v0.vec);
-		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat4(&v1.vec);
-		DirectX::XMVECTOR xmvr = DirectX::XMVectorSubtract(xmv0, xmv1);
 		DirectX::XMStoreFloat4(&vec, xmvr);
 	}
 
-	/// <summary>
-	/// 内積を計算
-	/// </summary>
-	/// <remarks>
-	/// float d = this->x * _v.x + this->y * _v.y + this->z * _v.z + this->w * _v.w;
-	/// return d;
-	/// </remarks>
-	float Dot(const Vector4& _v) const
-	{
+	/*****************************************************************//**
+	 * \brief ベクトルを加算
+	 * 
+	 * \param v0
+	 * \param v1
+	 * \memo this = v0+v1
+	 *********************************************************************/
+	void Add(const Vector4& v0, const Vector4& v1){
+		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat4(&v0.vec);
+		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat4(&v1.vec);
+		DirectX::XMVECTOR xmvr = DirectX::XMVectorAdd(xmv0, xmv1);
+		DirectX::XMStoreFloat4(&vec, xmvr);
+	}
+	
+	/*****************************************************************//**
+	 * \brief ベクトルの減算
+	 * 
+	 * \param _v
+	 *********************************************************************/
+	void Subtract(const Vector4& _v){
+		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat4(&vec);
+		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat4(&_v.vec);
+		DirectX::XMVECTOR xmvr = DirectX::XMVectorSubtract(xmv0, xmv1);
+		DirectX::XMStoreFloat4(&vec, xmvr);
+	}
+	
+	/*****************************************************************//**
+	 * \brief ベクトルの減算
+	 * 
+	 * \param v0
+	 * \param v1
+	 * \memo this = v0 - v1
+	 *********************************************************************/
+	void Subtract(const Vector4& v0, const Vector4& v1){
+		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat4(&v0.vec);
+		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat4(&v1.vec);
+		DirectX::XMVECTOR xmvr = DirectX::XMVectorSubtract(xmv0, xmv1);
+		DirectX::XMStoreFloat4(&vec, xmvr);
+	}
+	
+	/*****************************************************************//**
+	 * \brief 内積を計算
+	 * 
+	 * \param _v
+	 * \return 内積
+	 *********************************************************************/
+	float Dot(const Vector4& _v) const{
 		DirectX::XMVECTOR xmv0 = DirectX::XMLoadFloat4(&vec);
 		DirectX::XMVECTOR xmv1 = DirectX::XMLoadFloat4(&_v.vec);
 		return DirectX::XMVector4Dot(xmv0, xmv1).m128_f32[0];
 	}
-	/// <summary>
-	/// ベクトルの長さを取得
-	/// </summary>
-	float Length()
-	{
+	
+	/*****************************************************************//**
+	 * \brief ベクトルの長さを取得
+	 * 
+	 * \return 長さ
+	 *********************************************************************/
+	float Length(){
 		DirectX::XMVECTOR xmv = DirectX::XMLoadFloat4(&vec);
 		return DirectX::XMVector4Length(xmv).m128_f32[0];
 	}
-	/// <summary>
-	/// ベクトルの長さの二乗を取得
-	/// </summary>
-	float LengthSq()
-	{
+
+	/*****************************************************************//**
+	 * \brief ベクトルの長さの２乗を取得
+	 * 
+	 * \return 長さの２乗
+	 *********************************************************************/
+	float LengthSq(){
 		DirectX::XMVECTOR xmv = DirectX::XMLoadFloat4(&vec);
 		return DirectX::XMVector4LengthSq(xmv).m128_f32[0];
 	}
-	/// <summary>
-	/// ベクトルをスカラーで拡大
-	/// </summary>
-	/// <remarks>
-	/// 下記のような処理が行われています
-	/// this->x *= s;
-	/// this->y *= s;
-	/// this->z *= s;
-	/// this->w *= s;
-	/// </remarks>
-	void Scale(float s)
-	{
+	
+	/*****************************************************************//**
+	 * \brief ベクトルをスカラーで拡大
+	 * 
+	 * \param s 拡大率
+	 *********************************************************************/
+	void Scale(float s){
 		DirectX::XMVECTOR xmv = DirectX::XMLoadFloat4(&vec);
 		xmv = DirectX::XMVectorScale(xmv, s);
 		DirectX::XMStoreFloat4(&vec, xmv);
 	}
+	//!} 
+private:
+	//-----------------------------------------------------------------------------
+	// private variables.
+	//-----------------------------------------------------------------------------
+	//!{
+	//!}
+	//-----------------------------------------------------------------------------
+	// private methods.
+	//----------------------------------------------------------------------------- 
+	//!{
+	//!} 
 };
 
+//=============================================================================
+// 定数
+//=============================================================================
 const Vector2 g_vec2Zero = { 0.0f, 0.0f };
 const Vector3 g_vec3Zero = { 0.0f,  0.0f,  0.0f };
 const Vector3 g_vec3Right = { 1.0f,  0.0f,  0.0f };
@@ -720,86 +759,90 @@ const Vector4 g_vec4Black = { 0.0f, 0.0f, 0.0f, 1.0f };
 const Vector4 g_vec4Gray = { 0.5f, 0.5f, 0.5f, 1.0f };
 const Vector4 g_vec4Yellow = { 1.0f, 1.0f, 0.0f, 1.0f };
 
-/// <summary>
-/// クォータニオンクラス
-/// </summary>
+//=============================================================================
+//　クォータニオン 
+//=============================================================================
 class Quaternion : public Vector4 {
 public:
-	static const Quaternion Identity;		//!<単位クォータニオン
+	static const Quaternion Identity; // 単位クォータニオン
 	Quaternion()
 	{
 		x = y = z = 0.0f;
 		w = 1.0f;
 	}
-	/// <summary>
-	/// コンストラクタ
-	/// </summary>
+	
+	/*****************************************************************//**
+	 * \brief コンストラクタ
+	 * \param x X成分　
+	 * \param y	Y成分
+	 * \param z	Z成分
+	 * \param w	W成分
+	 *********************************************************************/
 	Quaternion(float x, float y, float z, float w) :
 		Vector4(x, y, z, w)
-	{
-	}
-	/// <summary>
-	/// X軸周りの回転クォータニオンを作成
-	/// </summary>
-	/// <param name="axis"></param>
-	/// <param name="angle"></param>
-	void SetRotationX(float angle)
-	{
+	{}
+	
+	/*****************************************************************//**
+	 * \brief X軸周りの回転クォータニオンを作成
+	 * 
+	 * \param angle 角度(Radian)
+	 *********************************************************************/
+	void SetRotationX(float angle){
 		SetRotation(g_vec3AxisX, angle);
 	}
-	/// <summary>
-	/// X軸周りの回転クォータニオンを作成
-	/// </summary>
-	/// <param name="angle">回転角度単位Degree</param>
-	void SetRotationDegX(float angle)
-	{
+	
+	/*****************************************************************//**
+	 * \brief X軸周りの回転クォータニオンを作成
+	 * 
+	 * \param angle 角度(Degree)
+	 *********************************************************************/
+	void SetRotationDegX(float angle){
 		SetRotationDeg(g_vec3AxisX, angle);
 	}
-	/// <summary>
-	/// Y軸周りの回転クォータニオンを作成
-	/// </summary>
-	/// <param name="axis"></param>
-	/// <param name="angle"></param>
-	void SetRotationY(float angle)
-	{
+
+	/*****************************************************************//**
+	 * \brief Y軸周りの回転クォータニオンを作成
+	 *
+	 * \param angle 角度(Radian)
+	 *********************************************************************/
+	void SetRotationY(float angle){
 		SetRotation(g_vec3AxisY, angle);
 	}
-	/// <summary>
-	/// Y軸周りの回転クォータニオンを作成
-	/// </summary>
-	/// <param name="angle">回転角度単位Degree</param>
-	void SetRotationDegY(float angle)
-	{
+
+	/*****************************************************************//**
+	 * \brief Y軸周りの回転クォータニオンを作成
+	 *
+	 * \param angle 角度(Degree)
+	 *********************************************************************/
+	void SetRotationDegY(float angle){
 		SetRotationDeg(g_vec3AxisY, angle);
 	}
 
-	/// <summary>
-	/// Z軸周りの回転クォータニオンを作成
-	/// </summary>
-	/// <param name="axis"></param>
-	/// <param name="angle"></param>
-	void SetRotationZ(float angle)
-	{
+	/*****************************************************************//**
+	 * \brief Z軸周りの回転クォータニオンを作成
+	 *
+	 * \param angle 角度(Radian)
+	 *********************************************************************/
+	void SetRotationZ(float angle){
 		SetRotation(g_vec3AxisZ, angle);
 	}
-	/// <summary>
-	/// Z軸周りの回転クォータニオンを作成
-	/// </summary>
-	/// <param name="angle">回転角度単位Degree</param>
-	void SetRotationDegZ(float angle)
-	{
+
+	/*****************************************************************//**
+	 * \brief Z軸周りの回転クォータニオンを作成
+	 *
+	 * \param angle 角度(Radian)
+	 *********************************************************************/
+	void SetRotationDegZ(float angle){
 		SetRotationDeg(g_vec3AxisZ, angle);
 	}
 
-
-
-	/// <summary>
-	/// 任意の軸周りの回転クォータニオンを作成
-	/// </summary>
-	/// <param name="axis">回転軸</param>
-	/// <param name="angle">回転角度単位ラジアン</param>
-	void SetRotation(const Vector3& axis, float angle)
-	{
+	/*****************************************************************//**
+	 * \brief 任意の軸周りの回転クォータニオンを作成
+	 * 
+	 * \param axis 回転軸
+	 * \param angle 回転角度(Radian)
+	 *********************************************************************/
+	void SetRotation(const Vector3& axis, float angle){
 		float s;
 		float halfAngle = angle * 0.5f;
 		s = sinf(halfAngle);
@@ -808,13 +851,14 @@ public:
 		y = axis.y * s;
 		z = axis.z * s;
 	}
-	/// <summary>
-	/// 任意の軸周りの回転クォータニオンを作成
-	/// </summary>
-	/// <param name="axis">回転軸</param>
-	/// <param name="angle">回転角度単位Degree</param>
-	void SetRotationDeg(const Vector3& axis, float angle)
-	{
+
+	/*****************************************************************//**
+	 * \brief 任意の軸周りの回転クォータニオンを作成
+	 * 
+	 * \param axis	回転軸
+	 * \param angle	回転角度(Degree)
+	 *********************************************************************/
+	void SetRotationDeg(const Vector3& axis, float angle){
 		float s;
 		float halfAngle = ToRad(angle) * 0.5f;
 		s = sinf(halfAngle);
@@ -823,25 +867,30 @@ public:
 		y = axis.y * s;
 		z = axis.z * s;
 	}
-	/// <summary>
-	/// 行列からクォータニオンを作成
-	/// </summary>
-	/// <param name="m">行列</param>
+	
+	/*****************************************************************//**
+	 * \brief 行列からクォータニオンを作成
+	 * 
+	 * \param m
+	 *********************************************************************/
 	void SetRotation(const Matrix& m);
-	/// <summary>
-	/// fromベクトルからtoベクトルに回転させるクォータニオンを作成
-	/// </summary>
-	/// <param name="from">回転前のベクトル</param>
-	/// <param name="to">回転後のベクトル</param>
+	
+	/*****************************************************************//**
+	 * \brief FromベクトルからToベクトルへ回転させる回転クォータニオンを作成
+	 * 
+	 * \param from
+	 * \param to
+	 *********************************************************************/
 	void SetRotation(Vector3 from, Vector3 to);
-	/// <summary>
-	/// 球面線形補完
-	/// </summary>
-	/// <param name="t">補完率</param>
-	/// <param name="q1">開始クォータニオン</param>
-	/// <param name="q2">終了クォータニオン</param>
-	void Slerp(float t, Quaternion q1, Quaternion q2)
-	{
+	
+	/*****************************************************************//**
+	 * \brief 球面線形保管
+	 * 
+	 * \param t	 補完率
+	 * \param q1 開始
+	 * \param q2 終了
+	 *********************************************************************/
+	void Slerp(float t, Quaternion q1, Quaternion q2){
 		DirectX::XMVECTOR xmv = DirectX::XMQuaternionSlerp(
 			DirectX::XMLoadFloat4(&q1.vec),
 			DirectX::XMLoadFloat4(&q2.vec),
@@ -849,22 +898,25 @@ public:
 		);
 		DirectX::XMStoreFloat4(&vec, xmv);
 	}
-	/// <summary>
-	/// Y軸周りの回転を加算
-	/// </summary>
-	/// <returns>加算する回転角度ラジアン単位</returns>
-	void AddRotationY(float angle)
-	{
+	
+	/*****************************************************************//**
+	 * \brief Y軸での回転を加算
+	 * 
+	 * \param angle 加算する回転角度(Radian)
+	 *********************************************************************/
+	void AddRotationY(float angle){
 		Quaternion addRot;
 		addRot.SetRotation(Vector3::AxisY, angle);
 		*this *= addRot;
 	}
-	/// <summary>
-	/// クォータニオン同士の乗算
-	/// </summary>
-	/// <param name="rot"></param>
-	void Multiply(const Quaternion& rot)
-	{
+	
+	/*****************************************************************//**
+	 * \brief クォータニオン同士の乗算
+	 * 
+	 * \param rot 
+	 * \memo this*=rot
+	 *********************************************************************/
+	void Multiply(const Quaternion& rot){
 		float pw, px, py, pz;
 		float qw, qx, qy, qz;
 
@@ -877,13 +929,15 @@ public:
 		z = pw * qz + px * qy - py * qx + pz * qw;
 
 	}
-	/// <summary>
-	/// クォータニオン同士の乗算
-	/// </summary>
-	/// <param name="rot0"></param>
-	/// <param name="rot1"></param>
-	void Multiply(const Quaternion& rot0, const Quaternion& rot1)
-	{
+	
+	/*****************************************************************//**
+	 * \brief クォータニオン同士の乗算
+	 * 
+	 * \param rot0
+	 * \param rot1
+	 * \memo this = rot0 * rot1
+	 *********************************************************************/
+	void Multiply(const Quaternion& rot0, const Quaternion& rot1){
 		float pw, px, py, pz;
 		float qw, qx, qy, qz;
 
@@ -895,33 +949,38 @@ public:
 		y = pw * qy - px * qz + py * qw + pz * qx;
 		z = pw * qz + px * qy - py * qx + pz * qw;
 	}
-	/// <summary>
-	/// クォータニオンの代入乗算演算子
-	/// </summary>
-	const Quaternion& operator*=(const Quaternion& rot0)
-	{
+	
+	/*****************************************************************//**
+	 * \brief クオータニオンの代入演算子
+	 * 
+	 * \param rot0
+	 * \return 
+	 *********************************************************************/
+	const Quaternion& operator*=(const Quaternion& rot0){
 		Multiply(rot0, *this);
 		return *this;
 	}
-	/// <summary>
-	/// ベクトルにクォータニオンを適用する
-	/// </summary>
-	void Apply(Vector4& _v) const
-	{
+	
+	/*****************************************************************//**
+	 * \brief ベクトルにクォータニオンを適応する
+	 * \param _v
+	 *********************************************************************/
+	void Apply(Vector4& _v) const{
 		DirectX::XMVECTOR xmv = DirectX::XMVector3Rotate(_v, *this);
 		DirectX::XMStoreFloat4(&_v.vec, xmv);
 	}
-	/// <summary>
-	/// ベクトルにクォータニオンを適用する
-	/// </summary>
-	void Apply(Vector3& _v) const
-	{
+
+	/*****************************************************************//**
+	 * \brief ベクトルにクォータニオンを適応する
+	 * \param _v
+	 *********************************************************************/
+	void Apply(Vector3& _v) const{
 		DirectX::XMVECTOR xmv = DirectX::XMVector3Rotate(_v, *this);
 		DirectX::XMStoreFloat3(&_v.vec, xmv);
 	}
 };
 
-//整数型のベクトルクラス
+//　整数型のベクトルクラス
 __declspec(align(16)) class Vector4i {
 public:
 	union {
@@ -929,49 +988,66 @@ public:
 		int v[4];
 	};
 };
-/// <summary>
-/// ベクトル同士の加算
-/// </summary>
-static inline Vector3 operator+(const Vector3& v0, const Vector3& v1)
-{
+
+
+/*****************************************************************//**
+ * \brief ベクトル同士の加算
+ * \param v0
+ * \param v1
+ * \return 
+ *********************************************************************/
+static inline Vector3 operator+(const Vector3& v0, const Vector3& v1){
 	Vector3 result;
 	result.Add(v0, v1);
 	return result;
 }
-/// <summary>
-/// ベクトルとスカラーの乗算
-/// </summary>
 
-static inline Vector3 operator*(const Vector3& v, float s)
-{
+/*****************************************************************//**
+ * \brief ベクトルとスカラーの乗算
+ * \param v
+ * \param s
+ * \return 
+ *********************************************************************/
+static inline Vector3 operator*(const Vector3& v, float s){
 	Vector3 result;
 	result = v;
 	result.Scale(s);
 	return result;
 }
-/// <summary>
-/// ベクトルとスカラーの除算
-/// </summary>
-static inline Vector3 operator/(const Vector3& v, float s)
-{
+
+/*****************************************************************//**
+ * \brief ベクトルとスカラーの除算
+ * 
+ * \param v
+ * \param s
+ * \return 
+ *********************************************************************/
+static inline Vector3 operator/(const Vector3& v, float s){
 	Vector3 result;
 	result = v;
 	result.Div(s);
 	return result;
 }
-/// <summary>
-/// ベクトル同士の減算
-/// </summary>
-static inline Vector3 operator-(const Vector3& v0, const Vector3& v1)
-{
+
+/*****************************************************************//**
+ * \brief ベクトル同士の減算
+ * \param v0
+ * \param v1
+ * \return 
+ *********************************************************************/
+static inline Vector3 operator-(const Vector3& v0, const Vector3& v1){
 	Vector3 result;
 	result.Subtract(v0, v1);
 	return result;
 }
 
-/// <summary>
-/// 外積を計算
-/// </summary>
+/*****************************************************************//**
+ * \brief 外積を計算
+ * 
+ * \param v0
+ * \param v1
+ * \return 
+ *********************************************************************/
 static inline Vector3 Cross(const Vector3& v0, const Vector3& v1){
 	Vector3 result;
 	result.Cross(v0, v1);

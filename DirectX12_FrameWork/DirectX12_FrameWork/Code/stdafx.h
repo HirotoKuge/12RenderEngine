@@ -15,7 +15,7 @@
 #pragma comment( lib, "DirectXTK12.lib" )
 #pragma comment( lib, "dxguid.lib" )
 #pragma comment( lib, "d3dcompiler.lib" )
-
+#pragma comment(lib, "DirectXTex.lib")
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,20 +23,24 @@
 #include <math.h>
 #include <vector>
 #include <list>
-#include <D3Dcompiler.h>
 #include <Windows.h>
-#include <d3d12.h>
 #include <map>
 #include <functional>
 #include <algorithm>
+#include <array>
+#include <atlbase.h>
+
+#include <D3Dcompiler.h>
 #include <DirectXMath.h>
 #include <Xinput.h>
-#include <array>
 #include <dxcapi.h>
-#include <atlbase.h>
 #include <dxgi.h>
 #include <dxgitype.h>
 #include <dxgiformat.h>
+#include <d3d12.h>
+#include <DirectXTex.h>
+
+#include "../WICTextureLoader/WICTextureLoader12.h"
 
 #include "../DirectXTK/Inc/CommonStates.h"
 #include "../DirectXTK/Inc/SpriteBatch.h"
@@ -72,6 +76,8 @@ using namespace Microsoft::WRL;
 #include "Direct3D12/RenderTarget.h"
 #include "Direct3D12/SharedStruct.h"
 #include "Direct3D12/Shader.h"
+
+#include "Direct3D12/mdFile.h"
 
 #include "Direct3D12/RenderContext_inline.h"
 #include "Direct3D12/DescriptorHeap_inline.h"

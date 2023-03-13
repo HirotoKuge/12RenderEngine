@@ -177,7 +177,7 @@ unsigned long Application::MainLoop(){
 
 	// テクスチャをロード
 	Texture tex;
-	tex.InitFromDDSFile(L"assets/image/SampleTexture.dds");
+	tex.InitFromDDSFile(L"assets/image/default.DDS");
 
 	// ディスクリプタヒープを作成
 	DescriptorHeap ds;

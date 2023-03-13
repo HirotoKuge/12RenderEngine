@@ -83,36 +83,36 @@ public:
 	{
 		mat = m;
 	}
-	
+
 	/*****************************************************************//**
 	 * \brief 代入演算子
-	 * \param _m 
-	 * \return 
+	 * \param _m
+	 * \return
 	 *********************************************************************/
-	Matrix& operator=(const Matrix& _m){
+	Matrix& operator=(const Matrix& _m) {
 		mat = _m.mat;
 		return *this;
 	}
-	
+
 	/*****************************************************************//**
 	 * \brief ベクトルと3x3行列を乗算
-	 * 
+	 *
 	 * \param vOut 乗算されるベクトル
 	 *********************************************************************/
-	void Apply3x3(Vector3& vOut) const{
+	void Apply3x3(Vector3& vOut) const {
 		Vector3 vTmp = vOut;
 		vOut.x = vTmp.x * m[0][0] + vTmp.y * m[1][0] + vTmp.z * m[2][0];
 		vOut.y = vTmp.x * m[0][1] + vTmp.y * m[1][1] + vTmp.z * m[2][1];
 		vOut.z = vTmp.x * m[0][2] + vTmp.y * m[1][2] + vTmp.z * m[2][2];
 	}
 
-	
+
 	/*****************************************************************//**
 	 * \brief ベクトルに行列を乗算
 	 *
 	 * \param vOut 乗算されるベクトル
 	 *********************************************************************/
-	void Apply(Vector3& vOut) const{
+	void Apply(Vector3& vOut) const {
 		DirectX::XMStoreFloat3(
 			&vOut.vec,
 			DirectX::XMVector3Transform(vOut, *this)
@@ -131,28 +131,28 @@ public:
 			DirectX::XMVector4Transform(vOut, *this)
 		);
 	}
-	
+
 	/*****************************************************************//**
 	 * \brief 平行移動行列を作成
 	 *
 	 * \param trans 移動量
 	 *********************************************************************/
-	void MakeTranslation(const Vector3& trans){
+	void MakeTranslation(const Vector3& trans) {
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixTranslationFromVector(trans)
 		);
 	}
-	void MakeTranslation(float x, float y, float z){
+	void MakeTranslation(float x, float y, float z) {
 		MakeTranslation(Vector3(x, y, z));
 	}
-	
+
 	/*****************************************************************//**
 	 * \brief Y軸周りの回転行列を作成
-	 * 
+	 *
 	 * \param angle 角度(radian)
 	 *********************************************************************/
-	void MakeRotationY(float angle){
+	void MakeRotationY(float angle) {
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixRotationY(angle)
@@ -171,106 +171,112 @@ public:
 			DirectX::XMMatrixRotationZ(angle)
 		);
 	}
-	/// <summary>
-	/// X軸周りの回転行列を作成
-	/// </summary>
-	/// <param name="angle">回転角度(単位：ラジアン)</param>
-	void MakeRotationX(float angle)
-	{
+
+	/*****************************************************************//**
+	 * \brief X軸周りの回転行列を作成
+	 *
+	 * \param angle 回転角度
+	 *********************************************************************/
+	void MakeRotationX(float angle) {
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixRotationX(angle)
 		);
 	}
-	/// <summary>
-	/// クォータニオンから回転行列を作成
-	/// </summary>
-	/// <param name="q">クォータニオン</param>
-	void MakeRotationFromQuaternion(const Quaternion& q)
-	{
+
+	/*****************************************************************//**
+	 * \brief クォータニオンから回転行列を居作成
+	 *
+	 * \param q クオータニオン
+	 *********************************************************************/
+	void MakeRotationFromQuaternion(const Quaternion& q) {
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixRotationQuaternion(q)
 		);
 	}
 
-	/// <summary>
-	/// 任意の軸周りの回転行列を作成
-	/// </summary>
-	/// <param name="axis">回転軸</param>
-	/// <param name="angle">回転角度</param>
-	void MakeRotationAxis(const Vector3& axis, float angle)
-	{
+	/*****************************************************************//**
+	 * \brief 任意の軸周りの回転行列を作成
+	 *
+	 * \param axis	回転軸
+	 * \param angle	回転角度
+	 *********************************************************************/
+	void MakeRotationAxis(const Vector3& axis, float angle) {
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixRotationAxis(axis, angle)
 		);
 	}
-	/// <summary>
-	/// 拡大行列を作成
-	/// </summary>
-	/// <param name="scale">拡大率</param>
-	void MakeScaling(const Vector3& scale)
-	{
+
+	/*****************************************************************//**
+	 * \brief 拡大行列を作成
+	 *
+	 * \param scale 拡大率
+	 *********************************************************************/
+	void MakeScaling(const Vector3& scale) {
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixScalingFromVector(scale)
 		);
 	}
-	/// <summary>
-	/// 透視変換行列を作成
-	/// </summary>
-	/// <param name="viewAngle">画角(単位：ラジアン)</param>
-	/// <param name="aspect">アスペクト比</param>
-	/// <param name="fNear">近平面</param>
-	/// <param name="fFar">遠平面</param>
+
+	/*****************************************************************//**
+	 * \brief プロジェクション変換行列を作成
+	 *
+	 * \param viewAngle	画角
+	 * \param aspect	アスペクト比
+	 * \param fNear		ニアクリップ
+	 * \param fFar		ファークリップ
+	 *********************************************************************/
 	void MakeProjectionMatrix(
 		float viewAngle,
 		float aspect,
 		float fNear,
 		float fFar
-	)
-	{
+	) {
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixPerspectiveFovLH(viewAngle, aspect, fNear, fFar)
 		);
 	}
-	/// <summary>
-	/// 平行投影行列を作成
-	/// </summary>
-	/// <param name="w">ビューボリュームの幅</param>
-	/// <param name="h">ビューボリュームの高さ</param>
-	/// <param name="fNear">近平面</param>
-	/// <param name="fFar">遠平面</param>
-	void MakeOrthoProjectionMatrix(float w, float h, float fNear, float fFar)
-	{
+
+	/*****************************************************************//**
+	 * \brief プロジェクション変換行列を作成
+	 *
+	 * \param w		ビューボリュームの幅
+	 * \param h		ビューボリュームの高さ
+	 * \param fNear	ニアクリップ
+	 * \param fFar	ファークリップ
+	 *********************************************************************/
+	void MakeOrthoProjectionMatrix(float w, float h, float fNear, float fFar) {
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixOrthographicLH(w, h, fNear, fFar)
 		);
 	}
-	/// <summary>
-	/// カメラ行列を作成
-	/// </summary>
-	/// <param name="position">視点</param>
-	/// <param name="target">注視点</param>
-	/// <param name="up">カメラの上方向</param>
-	void MakeLookAt(const Vector3& position, const Vector3& target, const Vector3& up)
-	{
+
+	/*****************************************************************//**
+	 * \brief カメラ行列を作成
+	 *
+	 * \param position	カメラ視点
+	 * \param target	注視点
+	 * \param up		カメラの上方向ベクトル
+	 *********************************************************************/
+	void MakeLookAt(const Vector3& position, const Vector3& target, const Vector3& up) {
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixLookAtLH(position, target, up)
 		);
 	}
-	/// <summary>
-	/// 行列と行列の乗算
-	/// </summary>
-	/// <remarks>
-	/// *this = m0 * m1;
-	/// </remarks>
-	void Multiply(const Matrix& m0, const Matrix& m1)
-	{
+
+	/*****************************************************************//**
+	 * \brief 行列同士の乗算
+	 *
+	 * \param m0
+	 * \param m1
+	 *********************************************************************/
+	void Multiply(const Matrix& m0, const Matrix& m1) {
 		DirectX::XMFLOAT4X4 lm;
 		DirectX::XMStoreFloat4x4(
 			&lm,
@@ -279,41 +285,39 @@ public:
 		mat = lm;
 	}
 
-	/// <summary>
-	/// 行列の代入演算子
-	/// </summary>
-	/// <remarks>
-	/// *this *= _m;
-	/// return *this;
-	/// </remarks>
-	const Matrix& operator*=(const Matrix& _m)
-	{
+	/*****************************************************************//**
+	 * \brief 代入演算子
+	 * \param _m
+	 * \return
+	 *********************************************************************/
+	const Matrix& operator*=(const Matrix& _m) {
 		Multiply(*this, _m);
 		return *this;
 	}
-	/// <summary>
-	/// 逆行列を計算
-	/// </summary>
-	/// <param name="_m">元になる行列</param>
-	void Inverse(const Matrix& _m)
-	{
+
+	/*****************************************************************//**
+	 * \brief 逆行列を計算
+	 *
+	 * \param _m 元の行列
+	 *********************************************************************/
+	void Inverse(const Matrix& _m) {
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixInverse(NULL, _m)
 		);
 	}
-	/// <summary>
-	/// 自身の逆行列を計算
-	/// </summary>
-	void Inverse()
-	{
+
+	/*****************************************************************//**
+	 * \brief 自身の逆行列を作成
+	 *********************************************************************/
+	void Inverse() {
 		Inverse(*this);
 	}
-	/// <summary>
-	/// 転置行列を計算
-	/// </summary>
-	void Transpose()
-	{
+	
+	/*****************************************************************//**
+	 * \brief 転置行列を計算
+	 *********************************************************************/
+	void Transpose(){
 		DirectX::XMStoreFloat4x4(
 			&mat,
 			DirectX::XMMatrixTranspose(*this)
