@@ -41,7 +41,6 @@ namespace mdFileFormat {
 		std::uint32_t numMaterial;	//マテリアルの数
 		std::uint32_t numVertex;	//頂点数
 		std::uint8_t indexSize;		//インデックスのサイズ:サイズは2か4
-		std::uint8_t pad[3];		//パディング
 	};
 
 	// 読み込んだ頂点
@@ -259,7 +258,25 @@ void mdFile::Load(const char* filePath){
 
 		// インデックスをロード
 		for (unsigned int materialNo = 0; materialNo < meshPartsHeader.numMaterial; materialNo++) {
-			
+			// ポリゴン数をロード
+			size_t numIndex = 0;
+			fread(&numIndex, sizeof(size_t), 1, fp);
+
+			// インデックスサイズによって格納先を変更する
+			if (meshPartsHeader.indexSize == 2) {
+				LoadIndex(
+					meshParts.indecies16[materialNo].indices,
+					numIndex,
+					fp
+				);
+			}
+			else {
+				LoadIndex(
+					meshParts.indecies32[materialNo].indices,
+					numIndex,
+					fp
+				);
+			}
 
 		}
 	}
