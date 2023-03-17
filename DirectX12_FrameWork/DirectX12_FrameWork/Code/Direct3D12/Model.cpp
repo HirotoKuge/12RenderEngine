@@ -45,6 +45,7 @@ void Model::UpdateWorldMatrix(Vector3 pos, Quaternion rot, Vector3 scale){
 //=============================================================================
 // 描画処理
 //=============================================================================
+//!{
 void Model::Draw(RenderContext& rc){
 	//3Dカメラ取得
 	auto pCamara3D = GraphicsEngine::GetInstance()->GetCamera3D();
@@ -56,9 +57,23 @@ void Model::Draw(RenderContext& rc){
 		pCamara3D->GetProjectionMatrix()
 	);
 }
+
 void Model::Draw(RenderContext& rc, Camera& camera){
 	Draw(rc, camera.GetViewMatrix(), camera.GetProjectionMatrix());
 }
+
+void Model::Draw(RenderContext& rc, Matrix& worldMtx){
+	//3Dカメラ取得
+	auto pCamara3D = GraphicsEngine::GetInstance()->GetCamera3D();
+
+	m_meshParts.Draw(
+		rc,
+		worldMtx,
+		pCamara3D->GetViewMatrix(),
+		pCamara3D->GetProjectionMatrix()
+	);
+}
+
 void Model::Draw(RenderContext& rc, const Matrix& viewMatrix, const Matrix& projMatrix){
 	m_meshParts.Draw(
 		rc,
@@ -67,6 +82,8 @@ void Model::Draw(RenderContext& rc, const Matrix& viewMatrix, const Matrix& proj
 		projMatrix
 	);
 }
+
+//!} 
 
 //=============================================================================
 // インスタンシング描画
