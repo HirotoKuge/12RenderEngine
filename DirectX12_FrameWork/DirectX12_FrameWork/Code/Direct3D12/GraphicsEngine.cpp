@@ -199,11 +199,6 @@ bool GraphicsEngine::Init(HWND hwnd, uint32_t frameBufferWidth, uint32_t frameBu
 	//初期化が終わったのでDXGIを破棄
 	dxgiFactory->Release();
 
-	/*
-	//ヌルテクスチャを初期化
-	m_nullTextureMaps.Init();
-	*/
-
 	//カメラを初期化する
 	m_camera2D.SetUpdateProjMatrixFunc(Camera::enUpdateProjMatrixFunc_Ortho);
 	m_camera2D.SetWidth(static_cast<float>(m_frameBufferWidth));
@@ -213,8 +208,6 @@ bool GraphicsEngine::Init(HWND hwnd, uint32_t frameBufferWidth, uint32_t frameBu
 
 	m_camera3D.SetPosition({ 0.0f, 50.0f, 200.0f });
 	m_camera3D.SetTarget({ 0.0f, 50.0f, 0.0f });
-
-
 
 	//DirectXTK用のグラフィックメモリ管理クラスのインスタンスを作成する
 	m_directXTKGfxMemroy = std::make_unique<DirectX::GraphicsMemory>(m_pDevice);
@@ -577,14 +570,11 @@ void GraphicsEngine::EndRender(){
 	//コマンドを実行
 	ID3D12CommandList* ppCommandLists[] = { m_pCommandList };
 	m_pCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-#if defined( SAMPE_16_04 ) || defined(APPEND_04)
-	// Present the frame.
-	m_pSwapChain->Present(0, 0);
-#else
-	// Present the frame.
+
+	// バックバッファと入れ替える
 	m_pSwapChain->Present(1, 0);
-#endif
 	m_directXTKGfxMemroy->GarbageCollect();
+
 	//描画完了待ち
 	WaitDraw();
 }

@@ -50,17 +50,24 @@ public:
 	~Texture();
 
 	/*****************************************************************//**
-	 * \brief DDSファイルから初期化
+	 * \brief .DDSファイルから初期化
 	 *  
-	 * \param filePath		ロードするテクスチャファイルパス
+	 * \param filePath ロードするテクスチャファイルパス
 	 *********************************************************************/
 	void InitFromDDSFile(const wchar_t* filePath);
 	
 	/*****************************************************************//**
+	 * \brief .pngから初期化
+	 * 
+	 * \param filePath	ロードするテクスチャファイルパス
+	 *********************************************************************/
+	void InitFromPNGFile(const wchar_t* filePath);
+
+	/*****************************************************************//**
 	 * \brief 
 	 * 
-	 * \param memory		テクスチャデータが格納されているメモリの先頭アドレス
-	 * \param size			テクスチャサイズ
+	 * \param memory テクスチャデータが格納されているメモリの先頭アドレス
+	 * \param size	 テクスチャサイズ
 	 *********************************************************************/
 	void InitFromMemory(const char* memory, unsigned int size);
 	
@@ -133,7 +140,10 @@ private:
 	//!{
 	
 	ID3D12Resource*			m_pTexture = nullptr;	//テクスチャ本体
+	ID3D12Resource*			m_pTextureUploadHeap = nullptr;	//テクスチャ本体
 	D3D12_RESOURCE_DESC		m_textureDesc;			//テクスチャ情報
+
+	bool m_isLoadFromWIC = false;
 
 	//!} 
 	//-----------------------------------------------------------------------------
@@ -147,6 +157,14 @@ private:
 	 * \param filePath		ファイルパス
 	 *********************************************************************/
 	void LoadTextureFromDDSFile(const wchar_t* filePath);
+	
+
+	/*****************************************************************//**
+	 * \brief WICを利用してテクスチャをロード:BMP,JPEG,PNG,TIFF,GIFに対応
+	 * 
+	 * \param filePath　ファイルパス
+	 *********************************************************************/
+	void LoadTextureFromWIC(const wchar_t* filePath);
 	
 	/*****************************************************************//**
 	 * \brief メモリからテクスチャをロード
