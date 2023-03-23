@@ -32,18 +32,20 @@
 namespace mdFileFormat {
 	// 現在のmdファイルのバージョン
 	std::uint16_t VERSION = 1;
-	
+
+	// マテリアルの数
+
 	// 全体のヘッダー
 	struct MD_Header {
-		std::uint8_t  version;	 //バージョン
+		std::uint16_t version;	 //バージョン
 		std::uint16_t numMeshes; //メッシュ数
 	};
-	
+
 	// 単位メッシュのヘッダー
 	struct MD_UnitMeshHeader {
 		std::uint32_t numMaterial;	//マテリアルの数
 		std::uint32_t numVertex;	//頂点数
-		std::uint8_t indexSize;		//インデックスのサイズ:サイズは2か4
+		std::uint32_t numIndex;		//インデックスの数
 	};
 
 	// 読み込んだ頂点
@@ -96,194 +98,142 @@ void mdFile::LoadIndex(std::vector<T>& indices, int numIndex, FILE* fp){
 //=============================================================================
 void mdFile::BuildMaterial(MD_Material& mdFMat, FILE* fp, const char* filePath){
 	
-	// アルベドのファイル名をロード
-	mdFMat.albedoMapFileName = LoadTextureFileName(fp);
-
-	// 法線マップのファイル名をロード
-	mdFMat.normalMapFileName = LoadTextureFileName(fp);
-
-	// スペキュラマップのファイル名をロード
-	mdFMat.specularMapFileName = LoadTextureFileName(fp);
-
-	// リフレクションマップのファイル名をロード
-	mdFMat.reflectionMapFileName = LoadTextureFileName(fp);
-
-	// 屈折マップのファイル名をロード
-	mdFMat.refractionMapFileName = LoadTextureFileName(fp);
-
-	std::string texFilePath = filePath;
-	auto loadTexture = [&](
-		std::string& texFileName,
-		std::unique_ptr<char[]>& ddsFileMemory,
-		unsigned int& fileSize,
-		std::string& texFilePathDst
-		) {
-			int filePathLength = static_cast<int>(texFilePath.length());
-			if (texFileName.length() > 0) {
-				// モデルのファイルパスからラストのフォルダ区切りを探す
-				auto replaseStartPos = texFilePath.find_last_of('/');
-				if (replaseStartPos == std::string::npos) {
-					replaseStartPos = texFilePath.find_last_of('\\');
-				}
-				replaseStartPos += 1;
-				auto replaceLen = filePathLength - replaseStartPos;
-				texFilePath.replace(replaseStartPos, replaceLen, texFileName);
-				
-				// 拡張子をddsに変更する
-				replaseStartPos = texFilePath.find_last_of('.') + 1;
-				replaceLen = texFilePath.length() - replaseStartPos;
-				texFilePath.replace(replaseStartPos, replaceLen, "dds");
-				
-				// テクスチャファイルパスを記憶しておく
-				texFilePathDst = texFilePath;
-
-				// テクスチャをロード
-				FILE* texFileFp = fopen(texFilePath.c_str(), "rb");
-				if (texFileFp != nullptr) {
-					//ファイルサイズを取得
-					fseek(texFileFp, 0L, SEEK_END);
-					fileSize = ftell(texFileFp);
-					fseek(texFileFp, 0L, SEEK_SET);
-
-					ddsFileMemory = std::make_unique<char[]>(fileSize);
-					fread(ddsFileMemory.get(), fileSize, 1, texFileFp);
-					fclose(texFileFp);
-				}
-				else {
-
-					MessageBoxA(nullptr, "テクスチャのロードに失敗しました", "エラー", MB_OK);
-					std::abort();
-				}
-			}
-	};
-
-	// テクスチャをロード
-	loadTexture(
-		mdFMat.albedoMapFileName,
-		mdFMat.albedoMap,
-		mdFMat.albedoMapSize,
-		mdFMat.albedoMapFilePath
-	);
-	loadTexture(
-		mdFMat.normalMapFileName,
-		mdFMat.normalMap,
-		mdFMat.normalMapSize,
-		mdFMat.normalMapFilePath
-	);
-	loadTexture(
-		mdFMat.specularMapFileName,
-		mdFMat.specularMap,
-		mdFMat.specularMapSize,
-		mdFMat.specularMapFilePath
-	);
-	loadTexture(
-		mdFMat.reflectionMapFileName,
-		mdFMat.reflectionMap,
-		mdFMat.reflectionMapSize,
-		mdFMat.reflectionMapFilePath
-	);
-	loadTexture(
-		mdFMat.refractionMapFileName,
-		mdFMat.refractionMap,
-		mdFMat.refractionMapSize,
-		mdFMat.refractionMapFilePath
-	);
+	
 }
 
 //=============================================================================
 // 読み込み処理
 //=============================================================================
 void mdFile::Load(const char* filePath){
+	
 	// ファイルを開けるで
-	FILE* fp = fopen(filePath, "rb");
-	if (fp == nullptr) {
+	FILE* pLoadFile = fopen(filePath, "rb");
+	if (pLoadFile == nullptr) {
 		MessageBoxA(nullptr, "mdファイルが開けません", "エラー", MB_OK);
 		return;
 	}
 
+	//----------------------------
 	// mdファイルのヘッダーを読み込み
+	//----------------------------
+	//!{
 	mdFileFormat::MD_Header header;
-	fread(&header, sizeof(header), 1, fp);
+	fread(&header, sizeof(header), 1, pLoadFile);
 	if (header.version != mdFileFormat::VERSION) {
 		//mdファイルのバージョンが違う
 		MessageBoxA(nullptr, "mdファイルのバージョンが異なっています", "エラー", MB_OK);
 	}
+	//!}
+	//----------------------------
+	// メッシュ単位で読みだす
+	//----------------------------
+	//!{
 
-	// == メッシュ情報をロードしていく == //
-
-	// メッシュサイズ分を確保
+	// メッシュサイズ分確保 
 	m_meshes.resize(header.numMeshes);
 
-	// メッシュ単位でロード処理をまわす
-	for (int meshPartsNo = 0; meshPartsNo < header.numMeshes; meshPartsNo++) {
+	// メッシュ単位でループ
+	for (auto i = 0; i < header.numMeshes; i++) {
 		// 格納先の設定
-		auto& meshParts = m_meshes[meshPartsNo];
-		
-		// 単位メッシュのヘッダーを読みだす
-		mdFileFormat::MD_UnitMeshHeader meshPartsHeader;
-		fread(&meshPartsHeader, sizeof(meshPartsHeader), 1, fp);
+		auto& mesh = m_meshes[i];
 
-		// マテリアル情報を記録できる領域を確保
-		meshParts.materials.resize(meshPartsHeader.numMaterial);
+		//----------------------------
+		// 単位メッシュのヘッダー読み出し
+		//----------------------------
+		//!{
+		mdFileFormat::MD_UnitMeshHeader meshHeader;
+		fread(&meshHeader, sizeof(mdFileFormat::MD_UnitMeshHeader), 1, pLoadFile);
+		//!} 
+		//----------------------------
+		// マテリアルデータの読み出し
+		//----------------------------
+		//!{
 
-		// マテリアル情報を構築
-		for (unsigned int materialNo = 0; materialNo < meshPartsHeader.numMaterial; materialNo++) {
-			auto& material = meshParts.materials[materialNo];
-			BuildMaterial(material, fp, filePath);
+		// マテリアルの数分領域を確保
+		mesh.materials.resize(meshHeader.numMaterial);
+
+		// 読み出し
+		for (auto j = 0; j < meshHeader.numMaterial; j++) {
+			
+			// 書き出し先の設定
+			auto& material = mesh.materials[j];
+
+			/*****************************************************************//**
+			 * \brief マテリアル読み出し関数
+			 *
+			 * \param fp ファイルポインタ
+			 * \param dst 格納先
+			 *********************************************************************/
+			auto LoadTextureFileName = [&](FILE* fp, std::string& dst) {
+				// 格納先をクリア
+				dst.clear();
+
+				// 文字列の長さを取得
+				size_t fileNameLength = 0;
+				fread(&fileNameLength, sizeof(size_t), 1, pLoadFile);
+
+				// １文字ずつ読みだす
+				for (auto k = 0; k < fileNameLength; k++) {
+					char tmp;
+					fread(&tmp, sizeof(char), 1, fp);
+					dst += tmp;
+				}
+			};
+
+			// 読みだす
+			LoadTextureFileName(pLoadFile, material.AlbedMapFileName);
+			LoadTextureFileName(pLoadFile, material.MetalnessMapFileName);
+			LoadTextureFileName(pLoadFile, material.RoughnessMapFileName);
+			LoadTextureFileName(pLoadFile, material.NormalMapFileName);
+			LoadTextureFileName(pLoadFile, material.HeightMapFileName);
+
 		}
 
-		// 頂点データ読み込み
-		meshParts.vertices.resize(meshPartsHeader.numVertex);
-		for (unsigned int vertNo = 0; vertNo < meshPartsHeader.numVertex; vertNo++) {
+		//!} 
+		//----------------------------
+		// 頂点データの読み出し
+		//----------------------------
+		//!{
+
+		// 領域確保
+		mesh.vertices.resize(meshHeader.numVertex);
+
+		for (auto j = 0; j < meshHeader.numVertex; j++) {
 			// 1頂点ごとに読みだす
 			mdFileFormat::MD_LoadVertex vertexTmp;
-			fread(&vertexTmp, sizeof(vertexTmp), 1, fp);
+			fread(&vertexTmp, sizeof(vertexTmp), 1, pLoadFile);
 
 			// 格納
-			auto& vertex = meshParts.vertices[vertNo];
+			auto& vertex = mesh.vertices[j];
 			vertex.pos.Set(vertexTmp.pos[0], vertexTmp.pos[1], vertexTmp.pos[2]);
 			vertex.normal.Set(vertexTmp.normal[0], vertexTmp.normal[1], vertexTmp.normal[2]);
+			vertex.uv.Set(vertexTmp.uv[0], vertexTmp.uv[1]);
 			vertex.tangent.Set(vertexTmp.tangent[0], vertexTmp.tangent[1], vertexTmp.tangent[2]);
 			vertex.binormal.Set(vertexTmp.binormal[0], vertexTmp.binormal[1], vertexTmp.binormal[2]);
-			vertex.uv.Set(vertexTmp.uv[0], vertexTmp.uv[1]);
 		}
 
-		// 続いてインデックス
-		// 処理系によってメモリサイズ変わる時があるのでサイズを指定する
-		if (meshPartsHeader.indexSize == 2) {
-			//16bitのインデックスバッファ
-			meshParts.indecies16.resize(meshPartsHeader.numMaterial);
-		}
-		else {
-			//32bitのインデックスバッファ
-			meshParts.indecies32.resize(meshPartsHeader.numMaterial);
+		//!}
+		//----------------------------
+		// インデックスの読み出し
+		//----------------------------
+		//!{ 
+
+		// 領域確保
+		mesh.indecies.resize(meshHeader.numIndex);
+
+		// 読み出し
+		for (auto j = 0; j < meshHeader.numIndex; j++) {
+			uint32_t index;
+			fread(&index, sizeof(uint32_t), 1, pLoadFile);
+			mesh.indecies[j] = index;
 		}
 
-		// インデックスをロード
-		for (unsigned int materialNo = 0; materialNo < meshPartsHeader.numMaterial; materialNo++) {
-			// ポリゴン数をロード
-			size_t numIndex = 0;
-			fread(&numIndex, sizeof(size_t), 1, fp);
-
-			// インデックスサイズによって格納先を変更する
-			if (meshPartsHeader.indexSize == 2) {
-				LoadIndex(
-					meshParts.indecies16[materialNo].indices,
-					numIndex,
-					fp
-				);
-			}
-			else {
-				LoadIndex(
-					meshParts.indecies32[materialNo].indices,
-					numIndex,
-					fp
-				);
-			}
-
-		}
+		//!}  
 	}
+	//!} 
 
-	fclose(fp);
+
+	fclose(pLoadFile);
+
 
 }

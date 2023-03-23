@@ -32,30 +32,16 @@ public:
 	//-----------------------------------------------------------------------------
 	//!{
 	//=============================================================================
-	// MD_Material:マテリアルデータの構造体
+	// MD_Material 
 	//=============================================================================
 	struct MD_Material {
-		std::string albedoMapFileName;			//アルベドマップのファイル名
-		std::string normalMapFileName;			//法線マップのファイル名
-		std::string specularMapFileName;		//スペキュラマップのファイル名
-		std::string reflectionMapFileName;		//リフレクションマップのファイル名
-		std::string refractionMapFileName;		//屈折マップのファイル名
-		std::unique_ptr<char[]>	albedoMap;		//ロードされたアルベドマップ：.dds
-		unsigned int albedoMapSize;				//アルベドマップのサイズ：.dds
-		std::unique_ptr<char[]>	normalMap;		//ロードされた法線マップ：.dds
-		unsigned int normalMapSize;				//法線マップのサイズ
-		std::unique_ptr<char[]>	specularMap;	//ロードされたスペキュラマップ：.dds
-		unsigned int specularMapSize;			//スペキュラマップのサイズ：.dds
-		std::unique_ptr<char[]>	reflectionMap;	//ロードされたリフレクションマップ：.dds
-		unsigned int reflectionMapSize;			//リフレクションマップのサイズ：.dds
-		std::unique_ptr<char[]>	refractionMap;	//ロードされた屈折マップ：.dds
-		unsigned int refractionMapSize;			//屈折マップのサイズ：.dds
-		std::string albedoMapFilePath;			//アルベドマップのファイルパス
-		std::string normalMapFilePath;			//法線マップのファイルパス
-		std::string specularMapFilePath;		//スペキュラマップのファイルパス
-		std::string reflectionMapFilePath;		//リフレクションマップのファイルパス
-		std::string refractionMapFilePath;		//屈折マップのファイルパス
+		std::string AlbedMapFileName = "";		// ディフューズマップファイルパス
+		std::string MetalnessMapFileName = "";	// メタルネスマップファイルパス
+		std::string RoughnessMapFileName = "";	// ラフネスマップファイルパス
+		std::string NormalMapFileName = "";		// 法線マップファイルパス
+		std::string HeightMapFileName = "";		// ハイトマップパス	
 	};
+
 
 	//=============================================================================
 	// MD_Vertex:頂点データの構造体
@@ -85,12 +71,12 @@ public:
 	//=============================================================================
 	// MD_UnitMesh:単位メッシュ
 	//=============================================================================
-	struct MD_UnitMesh{
-		std::vector<MD_Material> materials;
-		std::vector<MD_Vertex>	 vertices;
-		std::vector<MD_Index16>  indecies16;
-		std::vector<MD_Index32>  indecies32;
+	struct MD_UnitMesh {
+		std::vector<MD_Material>	materials;	// マテリアル
+		std::vector<MD_Vertex>		vertices;	// 頂点
+		std::vector<uint32_t>		indecies;	// インデックス
 	};
+
 
 	/*****************************************************************//**
 	 * \brief 3Dモデルをロード
@@ -138,7 +124,8 @@ private:
 	//-----------------------------------------------------------------------------
 	//!{
 	
-	std::vector<MD_UnitMesh> m_meshes; //メッシュパーツ
+	std::vector<MD_UnitMesh> m_meshes;	// メッシュパーツ
+	std::string m_directoryPath;		// ディレクトリのパス
 	
 	//!}
 	//-----------------------------------------------------------------------------
