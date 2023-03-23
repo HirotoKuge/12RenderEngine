@@ -18,6 +18,8 @@
 //=============================================================================
 void Model::Init(const ModelInitData& initData){
 	
+
+
 	m_meshParts.InitFromFile(
 		initData.pPathMD,
 		initData.pVSShaderPath,

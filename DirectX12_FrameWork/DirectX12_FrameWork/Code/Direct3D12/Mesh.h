@@ -74,6 +74,32 @@ public:
 		const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormats,
 		D3D12_FILTER samplerFilter);
 
+
+	/*****************************************************************//**
+	 * \brief mdファイルからモデルデータを初期化
+	 * 
+	 * \param mdFile						.mdファイルの実体
+	 * \param pMDFilePath					.mdファイルパス
+	 * \param pVSShaderPath					頂点シェーダー
+	 * \param pPSShaderPath
+	 * \param pExpandData
+	 * \param expandDataSize
+	 * \param pExpandShaderResourceViews
+	 * \param colorBufferFormats
+	 * \param samplerFilter
+	 *********************************************************************/
+	void InitFromMDFile(
+		const mdFile& mdFile,
+		const wchar_t* pMDFilePath,
+		const wchar_t* pVSShaderPath,
+		const wchar_t* pPSShaderPath,
+		void* pExpandData,
+		int expandDataSize,
+		const std::array<ShaderResource*, MAX_MODEL_EXPAND_SRV>& pExpandShaderResourceViews,
+		const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormats,
+		D3D12_FILTER samplerFilter);
+	
+
 	/*****************************************************************//**
 	 * \brief 描画
 	  * 
