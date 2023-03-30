@@ -18,7 +18,7 @@
 //=============================================================================
 void Model::Init(const ModelInitData& initData){
 	
-
+	auto load = new mdFile;
 
 	m_meshParts.InitFromFile(
 		initData.pPathMD,

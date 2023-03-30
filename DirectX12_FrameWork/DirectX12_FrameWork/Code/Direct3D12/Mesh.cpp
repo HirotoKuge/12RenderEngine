@@ -85,10 +85,87 @@ void Mesh::InitFromFile(
 	// ユーザー拡張用の定数バッファを作成
 	if (pExpandData) {
 		m_expandConstantBuffer.Init(expandDataSize, nullptr);
-		m_expandData = pExpandData;
+		m_pExpandData = pExpandData;
 	}
 	for (int i = 0; i < MAX_MODEL_EXPAND_SRV; i++) {
 		m_pExpandShaderResourceViews[i] = pExpandShaderResourceViews[i];
+	}
+
+	// ディスクリプタヒープを作成
+	CreateDescriptorHeaps();
+}
+
+
+//=============================================================================
+// MDファイルから初期化
+//=============================================================================
+void Mesh::InitFromMDFile(
+	const mdFile& mdFile, 
+	const wchar_t* pMDFilePath, 
+	const wchar_t* pVSShaderPath, 
+	const wchar_t* pPSShaderPath, 
+	void* pExpandData, 
+	int expandDataSize, 
+	const std::array<ShaderResource*, 
+	MAX_MODEL_EXPAND_SRV>& pExpandShaderResourceViews, 
+	const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormats, 
+	D3D12_FILTER samplerFilter
+){
+	m_pMeshs.resize(mdFile.GetMeshNum());
+	int meshNo = 0;
+	int materialNo = 0;
+
+	/*
+	mdFile.QueryUnitMesh([&](const mdFile::MD_UnitMesh& mesh) {
+		CreateMeshFromMDMesh(
+			mesh,
+			meshNo,
+			materialNo,
+			
+		);
+	};
+	*/
+}
+
+void Mesh::InitFromMDFile(
+	const mdFile& mdFile, 
+	const char* pShaderFilePath, 
+	const char* pVSEntryPointFunc, 
+	const char* pPSEntryPointFunc, 
+	void* pExpandData, 
+	int expandDataSize, 
+	const std::array<ShaderResource*, MAX_MODEL_EXPAND_SRV>& pExpandShaderResourceViews, 
+	const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormats, 
+	D3D12_FILTER samplerFilter
+){
+
+	m_pMeshs.resize(mdFile.GetMeshNum());
+	int meshNo = 0;
+	int materialNo = 0;
+
+	
+	// メッシュの作成
+	mdFile.QueryUnitMesh([&](const mdFile::MD_UnitMesh& mesh) {
+		CreateMeshFromMDMesh(
+			mesh,
+			meshNo,
+			materialNo,
+			pShaderFilePath,
+			pVSEntryPointFunc,
+			pPSEntryPointFunc,
+			colorBufferFormats,
+			samplerFilter
+		);
+		meshNo++;
+	});
+	
+	// 共通定数バッファの初期化
+	m_commonConstantBuffer.Init(sizeof(LocalConstantBuffer), nullptr);
+
+	// 拡張定数バッファの初期化
+	if (pExpandData != nullptr) {
+		m_expandConstantBuffer.Init(expandDataSize, nullptr);
+		m_pExpandData = pExpandData;
 	}
 
 	// ディスクリプタヒープを作成
@@ -152,6 +229,51 @@ void Mesh::CreateMeshFromRes(
 }
 
 //=============================================================================
+// MDメッシュから単位メッシュを初期化
+//=============================================================================
+void Mesh::CreateMeshFromMDMesh(
+	const mdFile::MD_UnitMesh& mdUnitMesh, 
+	int meshNo, 
+	int& materialNo, 
+	const char* pShaderFilePath, 
+	const char* pVSEntryPointFunc, 
+	const char* pPSEntryPointFunc, 
+	const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormats, 
+	D3D12_FILTER samplerFilter
+){
+	//----------------------------
+	// 頂点バッファを作成
+	//----------------------------
+	//!{
+	
+	int numVertex = (int)mdUnitMesh.vertices.size();
+	int vertexStride = sizeof(mdFile::MD_Vertex);
+	auto mesh = new UnitMesh;
+	mesh->vertexBuffer.Init(vertexStride * numVertex, vertexStride);
+	mesh->vertexBuffer.Copy((void*)&mdUnitMesh.vertices[0]);
+
+	//!} 
+	//----------------------------
+	// インデックスバッファを作成
+	//----------------------------
+	//!{
+	
+	
+
+	//!} 
+	//----------------------------
+	// マテリアルを作成
+	//----------------------------
+	//!{
+	
+	//!} 
+	
+
+	m_pMeshs[meshNo] = mesh;
+	
+}
+
+//=============================================================================
 // 共通の描画処理
 //=============================================================================
 void Mesh::DrawCommon(RenderContext& rc, const Matrix& worldMtx, const Matrix& viewMtx, const Matrix& projMtx){
@@ -166,8 +288,8 @@ void Mesh::DrawCommon(RenderContext& rc, const Matrix& worldMtx, const Matrix& v
 	cb.mProj = projMtx;
 	m_commonConstantBuffer.CopyToVRAM(cb);
 
-	if (m_expandData) {
-		m_expandConstantBuffer.CopyToVRAM(m_expandData);
+	if (m_pExpandData) {
+		m_expandConstantBuffer.CopyToVRAM(m_pExpandData);
 	}
 	
 }
@@ -185,6 +307,7 @@ void Mesh::Draw(RenderContext& rc, const Matrix& worldMtx, const Matrix& viewMtx
 		// 頂点バッファを設定
 		rc.SetVertexBuffer(mesh->vertexBuffer);
 		
+		// マテリアルごとに描画
 		for (auto matNo = 0; matNo < mesh->pIndexBufferArray.size(); matNo++) {
 
 			// マテリアルデータ設定
@@ -246,34 +369,43 @@ void Mesh::CreateDescriptorHeaps(){
 
 	for (auto& mesh : m_pMeshs) {
 		for (int matNo = 0; matNo < mesh->pMaterials.size(); matNo++) {
-			//ディスクリプタヒープにディスクリプタを登録していく
+		
+			//---------------------------- 
+			// テクスチャを登録
+			//---------------------------- 
+			//!{
+			
 			m_descriptorHeap.RegistShaderResource(srvNo, mesh->pMaterials[matNo]->GetAlbedoMap());			//アルベドマップ
 			m_descriptorHeap.RegistShaderResource(srvNo + 1,mesh->pMaterials[matNo]->GetNormalMap());		//法線マップ
-			m_descriptorHeap.RegistShaderResource(srvNo + 2,mesh->pMaterials[matNo]->GetNormalMap());		//法線マップ
-			//m_descriptorHeap.RegistShaderResource(srvNo + 3,mesh->pMaterials[matNo]->GetMetallicMap());		//法線マップ
-			//m_descriptorHeap.RegistShaderResource(srvNo + 3,mesh->pMaterials[matNo]->GetRouthnessMap());		//法線マップ
+			//m_descriptorHeap.RegistShaderResource(srvNo + 2,mesh->pMaterials[matNo]->GetNormalMap());		//法線マップ
+			//m_descriptorHeap.RegistShaderResource(srvNo + 4,mesh->pMaterials[matNo]->GetMetallicMap());		//法線マップ
+			//m_descriptorHeap.RegistShaderResource(srvNo + 5,mesh->pMaterials[matNo]->GetRouthnessMap());		//法線マップ
 
 			for (int i = 0; i < MAX_MODEL_EXPAND_SRV; i++) {
 				if (m_pExpandShaderResourceViews[i]) {
 					m_descriptorHeap.RegistShaderResource(srvNo + EXPAND_SRV_REG__START_NO + i, *m_pExpandShaderResourceViews[i]);
 				}
 			}
+			
+			//!}
+			//----------------------------
+			// 定数バッファ
+			//----------------------------
+			//!{  
+			 
 			srvNo += NUM_SRV_ONE_MATERIAL;
 			m_descriptorHeap.RegistConstantBuffer(cbNo, m_commonConstantBuffer);
-
-			//TEST:定数バッファで質感変える用
-			if (mesh->pMaterials[matNo]->GetConstantBuffer().IsValid()) {
-				m_descriptorHeap.RegistConstantBuffer(cbNo + 1, mesh->pMaterials[matNo]->GetConstantBuffer());
-			}
-
 			// 拡張定数バッファあるなら追加
 			if (m_expandConstantBuffer.IsValid()) {
 				m_descriptorHeap.RegistConstantBuffer(cbNo + 2, m_expandConstantBuffer);
 			}
 
 			cbNo += NUM_CBV_ONE_MATERIAL;
+			
+			//!}  
 		}
 	}
+	// 登録を確定
 	m_descriptorHeap.Commit();
 }
 

@@ -24,17 +24,17 @@ struct UnitMesh {
 	std::vector<Material*>		pMaterials;			//マテリアル
 };
 
- //-----------------------------------------------------------------------------
- // Mesh Class
- //-----------------------------------------------------------------------------
-class Mesh{
+//=============================================================================
+// Mesh Class
+//=============================================================================
+class Mesh {
 	//-----------------------------------------------------------------------------
 	// list of friend classes and methods.
 	//-----------------------------------------------------------------------------
 	//!{
 			/* Nothing */
 	//!} 
-public: 
+public:
 	//-----------------------------------------------------------------------------
 	// public variables.
 	//-----------------------------------------------------------------------------
@@ -50,11 +50,11 @@ public:
 	/*****************************************************************//**
 	 * \brief デストラクタ
 	 *********************************************************************/
-	~Mesh();	
+	~Mesh();
 
 	/*****************************************************************//**
 	 * \brief ファイルからモデルデータを初期化
-	 * 
+	 *
 	 * \param pMDFilePath					MDファイルパス
 	 * \param pVSShaderPath					頂点シェーダーのファイルパス
 	 * \param pPSShaderPath					ピクセルシェーダーのファイルパス
@@ -99,6 +99,31 @@ public:
 		const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormats,
 		D3D12_FILTER samplerFilter);
 	
+	/*****************************************************************//**
+	 * \brief MDファイルからモデルデータを初期化
+	 * 
+	 * \param mdFile						.mdファイルの実体
+	 * \param pShaderFilePath				シェーダーファイルのパス
+	 * \param pVSEntryPointFunc				頂点シェーダーのエントリポイント
+	 * \param pPSEntryPointFunc				ピクセルシェーダーのエントリポイント
+	 * \param pExpandData					拡張データ
+	 * \param expandDataSize				拡張データのサイズ
+	 * \param pExpandShaderResourceViews	拡張シェーダーリソースの配列
+	 * \param colorBufferFormats			レンダリング先のカラーバッファのフォーマット
+	 * \param samplerFilter					サンプラーフィルター
+	 *********************************************************************/
+	void InitFromMDFile(
+		const mdFile& mdFile,
+		const char* pShaderFilePath,
+		const char* pVSEntryPointFunc,
+		const char* pPSEntryPointFunc,
+		void* pExpandData,
+		int expandDataSize,
+		const std::array<ShaderResource*, MAX_MODEL_EXPAND_SRV>& pExpandShaderResourceViews,
+		const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormats,
+		D3D12_FILTER samplerFilter);
+
+
 
 	/*****************************************************************//**
 	 * \brief 描画
@@ -156,7 +181,7 @@ private:
 	std::array<ShaderResource*, MAX_MODEL_EXPAND_SRV> m_pExpandShaderResourceViews = { nullptr };	//ユーザー拡張シェーダーリソースビュー
 	std::vector<UnitMesh*> m_pMeshs;						//メッシュ
 	DescriptorHeap m_descriptorHeap;					//ディスクリプタヒープ
-	void* m_expandData = nullptr;						//ユーザー拡張データ
+	void* m_pExpandData = nullptr;						//ユーザー拡張データ
 
 	static MDLoader	m_loader; // リソースローダー
 
@@ -187,6 +212,28 @@ private:
 		const wchar_t* pPSShaderPath,
 		void* pExpandData,
 		int expandDataSize,
+		const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormats,
+		D3D12_FILTER samplerFilter);
+
+	/*****************************************************************//**
+	 * \brief MDメッシュからメッシュを作成1
+	 * 
+	 * \param mdUnitMesh			対象のメッシュ
+	 * \param meshNo				メッシュ番号
+	 * \param materialNo			マテリアル番号
+	 * \param pShaderFilePath		シェーダーファイルパス
+	 * \param pVSEntryPointFunc		頂点シェーダーのエントリーポイント
+	 * \param pPSEntryPointFunc		ピクセルシェーダーのエントリーポイント
+	 * \param colorBufferFormats	カラーターゲットのフォーマット
+	 * \param samplerFilter			サンプラーフィルター
+	 *********************************************************************/
+	void CreateMeshFromMDMesh(
+		const mdFile::MD_UnitMesh& mdUnitMesh,
+		int meshNo,
+		int& materialNo,
+		const char* pShaderFilePath,
+		const char* pVSEntryPointFunc,
+		const char* pPSEntryPointFunc,
 		const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormats,
 		D3D12_FILTER samplerFilter);
 
